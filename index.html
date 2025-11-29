@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valoの日本語 - 特務技能報點</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & Babel CDNs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+        /* 全局字体设置，确保 PingFang TC 优先 */
+        body {
+            font-family: "PingFang TC", "PingFang SC", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            background-color: black;
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* 避免 Tailwind 的默认字体干扰 */
+        #root {
+            font-family: inherit;
+        }
+
+        /* ------------------------------------------------------------------
+         * CSS 关键帧动画
+         * ------------------------------------------------------------------
+         */
+        :root {
+            --ease-apple: cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-up {
+            animation: fadeUp 0.6s var(--ease-apple) forwards;
+            opacity: 0;
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.98) translateY(5px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .animate-scale-in {
+            animation: scaleIn 0.4s var(--ease-apple) forwards;
+        }
+
+        @keyframes sheen {
+            0% { transform: translateX(-150%) skewX(-15deg); }
+            100% { transform: translateX(150%) skewX(-15deg); }
+        }
+
+        .group:hover .animate-sheen {
+            animation: sheen 0.8s ease-in-out;
+        }
+
+        @keyframes blob-bounce {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        .animate-blob {
+            animation: blob-bounce 10s infinite alternate;
+        }
+        
+        .jp-name-truncate {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #18181b; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #52525b; 
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // ------------------------------------------------------------------
+        // 图标组件 (替换原有的 Lucide CDN 引用，确保 React 组件可用)
+        // ------------------------------------------------------------------
+        const IconBase = ({ children, size = 24, className = "" }) => (
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width={size} 
+                height={size} 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className={className}
+            >
+                {children}
+            </svg>
+        );
+
+        const Volume2 = (props) => (
+            <IconBase {...props}>
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            </IconBase>
+        );
+
+        const ArrowLeft = (props) => (
+            <IconBase {...props}>
+                <path d="m12 19-7-7 7-7" />
+                <path d="M19 12H5" />
+            </IconBase>
+        );
+
+        const Search = (props) => (
+            <IconBase {...props}>
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+            </IconBase>
+        );
+
+        const Edit2 = (props) => (
+            <IconBase {...props}>
+                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+            </IconBase>
+        );
+
+        const Sparkles = (props) => (
+            <IconBase {...props}>
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 3Z" />
+            </IconBase>
+        );
+
+        // ------------------------------------------------------------------
+        // 数据配置区
+        // ------------------------------------------------------------------
+        const POPULARITY_RANK = [
+          "Jett", "Reyna", "Clove", "Omen", "Sova", "Gekko", "Sage", "Iso", 
+          "Cypher", "Neon", "Raze", "Chamber", "Viper", "Yoru", "Killjoy", 
+          "Breach", "Skye", "Fade", "Brimstone", "KAY/O", "Deadlock", 
+          "Astra", "Harbor", "Phoenix", "Vyse"
+        ];
+
+        const AGENT_ROLES = ["All", "Duelist", "Controller", "Initiator", "Sentinel"];
+
+        // 繁體中文譯名和日文常用報點 (Traditional Chinese Names & Japanese Callouts)
+        const AGENT_LOCAL_DATA = {
+          "Jett": {
+            nameCn: "婕提",
+            callouts: {
+              "Cloudburst": { jpCommon: "モク", romajiCommon: "Moku", desc: "煙霧。" },
+              "Updraft": { jpCommon: "アップドラフト", romajiCommon: "Appudorafuto", desc: "升空。" },
+              "Tailwind": { jpCommon: "エントリー", romajiCommon: "Entorii", desc: "衝刺/進點。" },
+              "Blade Storm": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
+            }
+          },
+          "Reyna": {
+            nameCn: "蕾娜",
+            callouts: {
+              "Leer": { jpCommon: "目", romajiCommon: "Me", desc: "眼睛。" },
+              "Devour": { jpCommon: "回復", romajiCommon: "Kaifuku", desc: "回血。" },
+              "Dismiss": { jpCommon: "ディスミス", romajiCommon: "Disumisu", desc: "無敵。" },
+              "Empress": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "女皇。" }
+            }
+          },
+          "Phoenix": {
+            nameCn: "鳳凰",
+            callouts: {
+              "Blaze": { jpCommon: "壁", romajiCommon: "Kabe", desc: "火牆。" },
+              "Curveball": { jpCommon: "フラッシュ", romajiCommon: "Furasshu", desc: "閃光。" },
+              "Hot Hands": { jpCommon: "モロトフ", romajiCommon: "Morotofu", desc: "燃燒彈。" },
+              "Run it Back": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
+            }
+          },
+          "Raze": {
+            nameCn: "芮茲",
+            callouts: {
+              "Boom Bot": { jpCommon: "ドローン", romajiCommon: "Doroon", desc: "小車。" },
+              "Blast Pack": { jpCommon: "サッチェル", romajiCommon: "Saccheru", desc: "炸藥包。" },
+              "Paint Shells": { jpCommon: "グレ", romajiCommon: "Gure", desc: "手雷。" },
+              "Showstopper": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "火箭筒。" }
+            }
+          },
+          "Yoru": {
+            nameCn: "夜戮",
+            callouts: {
+              "Fakeout": { jpCommon: "デコイ", romajiCommon: "Dekoi", desc: "假身。" },
+              "Blindside": { jpCommon: "フラッシュ", romajiCommon: "Furasshu", desc: "閃光。" },
+              "Gatecrash": { jpCommon: "テレポート", romajiCommon: "Terepooto", desc: "傳送。" },
+              "Dimensional Drift": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
+            }
+          },
+          "Neon": {
+            nameCn: "妮虹",
+            callouts: {
+              "Fast Lane": { jpCommon: "壁", romajiCommon: "Kabe", desc: "電牆。" },
+              "Relay Bolt": { jpCommon: "スタン", romajiCommon: "Sutan", desc: "震盪。" },
+              "High Gear": { jpCommon: "走り", romajiCommon: "Hashiri", desc: "跑步。" },
+              "Overdrive": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
+            }
+          },
+          "Iso": {
+            nameCn: "依索",
+            callouts: {
+              "Contingency": { jpCommon: "壁", romajiCommon: "Kabe", desc: "防彈牆。" },
+              "Undercut": { jpCommon: "弱体化", romajiCommon: "Jakutaika", desc: "易傷。" },
+              "Double Tap": { jpCommon: "シールド", romajiCommon: "Shiirudo", desc: "護盾。" },
+              "Kill Contract": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "領域展開。" }
+            }
+          },
+          "Clove": {
+            nameCn: "珂蘿",
+            callouts: {
+              "Ruse": { jpCommon: "モク", romajiCommon: "Moku", desc: "煙霧。" },
+              "Meddle": { jpCommon: "弱体化", romajiCommon: "Jakutaika", desc: "腐壞。" },
+              "Pick-me-up": { jpCommon: "回復", romajiCommon: "Kaifuku", desc: "吸血。" },
+              "Not Dead Yet": { jpCommon: "復活", romajiCommon: "Fukkatsu", desc: "復活。" }
+            }
+          },
+          "Omen": {
+            nameCn: "歐姆",
+            callouts: {
+              "Shrouded Step": { jpCommon: "テレポート", romajiCommon: "Terepooto", desc: "傳送。" },
+              "Paranoia": { jpCommon: "パラ", romajiCommon: "Para", desc: "致盲。" },
+              "Dark Cover": { jpCommon: "モク", romajiCommon: "Moku", desc: "煙霧。" },
+              "From the Shadows": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "全圖傳送。" }
+            }
+          },
+          "Brimstone": {
+            nameCn: "煉獄",
+            callouts: {
+              "Incendiary": { jpCommon: "モロトフ", romajiCommon: "Morotofu", desc: "燃燒彈。" },
+              "Sky Smoke": { jpCommon: "モク", romajiCommon: "Moku", desc: "煙霧。" },
+              "Stim Beacon": { jpCommon: "ビーコン", romajiCommon: "Biikon", desc: "激素。" },
+              "Orbital Strike": { jpCommon: "空爆", romajiCommon: "Kuubaku", desc: "空襲。" }
+            }
+          },
+          "Viper": {
+            nameCn: "薇蝮",
+            callouts: {
+              "Snake Bite": { jpCommon: "毒", romajiCommon: "Doku", desc: "毒液。" },
+              "Poison Cloud": { jpCommon: "モク", romajiCommon: "Moku", desc: "毒煙。" },
+              "Toxic Screen": { jpCommon: "カーテン", romajiCommon: "Kaaten", desc: "毒幕。" },
+              "Viper's Pit": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
+            }
+          },
+          "Astra": {
+            nameCn: "亞星卓",
+            callouts: {
+              "Gravity Well": { jpCommon: "吸い込み", romajiCommon: "Suikomi", desc: "吸人。" },
+              "Nova Pulse": { jpCommon: "スタン", romajiCommon: "Sutan", desc: "震盪。" },
+              "Nebula": { jpCommon: "モク", romajiCommon: "Moku", desc: "煙霧。" },
+              "Cosmic Divide": { jpCommon: "壁", romajiCommon: "Kabe", desc: "大牆。" }
+            }
+          },
+          "Harbor": {
+            nameCn: "哈泊",
+            callouts: {
+              "Cascade": { jpCommon: "壁", romajiCommon: "Kabe", desc: "推牆。" },
+              "Cove": { jpCommon: "ドーム", romajiCommon: "Doomu", desc: "水盾。" },
+              "High Tide": { jpCommon: "カーテン", romajiCommon: "Kaaten", desc: "水牆。" },
+              "Reckoning": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
+            }
+          },
+          "Sova": {
+            nameCn: "蘇法",
+            callouts: {
+              "Owl Drone": { jpCommon: "ドローン", romajiCommon: "Doroon", desc: "無人機。" },
+              "Shock Bolt": { jpCommon: "ショック", romajiCommon: "Shokku", desc: "震盪箭。" },
+              "Recon Bolt": { jpCommon: "リコン", romajiCommon: "Rikon", desc: "探測箭。" },
+              "Hunter's Fury": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
+            }
+          },
+          "Gekko": {
+            nameCn: "蓋克",
+            callouts: {
+              "Mosh Pit": { jpCommon: "モッシュ", romajiCommon: "Mosshu", desc: "毒潭。" },
+              "Wingman": { jpCommon: "ウィングマン", romajiCommon: "Winguman", desc: "皮蛋。" },
+              "Dizzy": { jpCommon: "ディジー", romajiCommon: "Dijii", desc: "丟丟。" },
+              "Thrash": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "鯊魚。" }
+            }
+          },
+          "Breach": {
+            nameCn: "叛奇",
+            callouts: {
+              "Aftershock": { jpCommon: "アフターショック", romajiCommon: "Afutaashokku", desc: "餘震。" },
+              "Flashpoint": { jpCommon: "フラッシュ", romajiCommon: "Furasshu", desc: "閃光。" },
+              "Fault Line": { jpCommon: "スタン", romajiCommon: "Sutan", desc: "震盪。" },
+              "Rolling Thunder": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
+            }
+          },
+          "Skye": {
+            nameCn: "絲凱",
+            callouts: {
+              "Regrowth": { jpCommon: "ヒール", romajiCommon: "Hiiru", desc: "治療。" },
+              "Trailblazer": { jpCommon: "犬", romajiCommon: "Inu", desc: "狗。" },
+              "Guiding Light": { jpCommon: "鳥", romajiCommon: "Tori", desc: "鳥。" },
+              "Seekers": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "追蹤。" }
+            }
+          },
+          "KAY/O": {
+            nameCn: "K/O",
+            callouts: {
+              "FRAGMENT": { jpCommon: "グレ", romajiCommon: "Gure", desc: "手雷。" },
+              "FLASH/DRIVE": { jpCommon: "フラッシュ", romajiCommon: "Furasshu", desc: "閃光。" },
+              "ZERO/POINT": { jpCommon: "ナイフ", romajiCommon: "Naifu", desc: "抑制刀。" },
+              "NULL/CMD": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
+            }
+          },
+          "Fade": {
+            nameCn: "菲德",
+            callouts: {
+              "Prowler": { jpCommon: "プラウラー", romajiCommon: "Purauraa", desc: "鬼犬。" },
+              "Seize": { jpCommon: "シーズ", romajiCommon: "Shiizu", desc: "束縛。" },
+              "Haunt": { jpCommon: "目", romajiCommon: "Me", desc: "眼。" },
+              "Nightfall": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
+            }
+          },
+          "Sage": {
+            nameCn: "聖祈",
+            callouts: {
+              "Barrier Orb": { jpCommon: "壁", romajiCommon: "Kabe", desc: "冰牆。" },
+              "Slow Orb": { jpCommon: "スロウ", romajiCommon: "Surou", desc: "減速球。" },
+              "Healing Orb": { jpCommon: "ヒール", romajiCommon: "Hiiru", desc: "治療。" },
+              "Resurrection": { jpCommon: "蘇生", romajiCommon: "Sosei", desc: "復活。" }
+            }
+          },
+          "Cypher": {
+            nameCn: "瑟符",
+            callouts: {
+              "Trapwire": { jpCommon: "ワイヤー", romajiCommon: "Waiyaa", desc: "絆線。" },
+              "Cyber Cage": { jpCommon: "ケージ", romajiCommon: "Keeji", desc: "煙霧籠。" },
+              "Spycam": { jpCommon: "カメラ", romajiCommon: "Kamera", desc: "攝像頭。" },
+              "Neural Theft": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
+            }
+          },
+          "Killjoy": {
+            nameCn: "愷宙",
+            callouts: {
+              "Nanoswarm": { jpCommon: "グレ", romajiCommon: "Gure", desc: "手雷。" },
+              "Alarmbot": { jpCommon: "アラームボット", romajiCommon: "Araamubotto", desc: "機器人。" },
+              "Turret": { jpCommon: "タレット", romajiCommon: "Taretto", desc: "砲台。" },
+              "Lockdown": { jpCommon: "ロックダウン", romajiCommon: "RokkuDaun", desc: "大招。" }
+            }
+          },
+          "Chamber": {
+            nameCn: "錢博爾",
+            callouts: {
+              "Trademark": { jpCommon: "トレードマーク", romajiCommon: "Toreedomaaku", desc: "陷阱。" },
+              "Headhunter": { jpCommon: "ヘッドハンター", romajiCommon: "Heddohantaa", desc: "小手槍。" },
+              "Rendezvous": { jpCommon: "テレポート", romajiCommon: "Terepooto", desc: "傳送。" },
+              "Tour De Force": { jpCommon: "オペ", romajiCommon: "Ope", desc: "大狙。" }
+            }
+          },
+          "Deadlock": {
+            nameCn: "蒂羅",
+            callouts: {
+              "GravNet": { jpCommon: "ネット", romajiCommon: "Netto", desc: "網。" },
+              "Sonic Sensor": { jpCommon: "センサー", romajiCommon: "Sensaa", desc: "傳感器。" },
+              "Barrier Mesh": { jpCommon: "壁", romajiCommon: "Kabe", desc: "屏障。" },
+              "Annihilation": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
+            }
+          },
+          "Vyse": {
+            nameCn: "薇絲",
+            callouts: {
+              "Razorvine": { jpCommon: "ヴァイン", romajiCommon: "Vain", desc: "藤蔓。" },
+              "Shear": { jpCommon: "壁", romajiCommon: "Kabe", desc: "隔離牆。" },
+              "Arc Rose": { jpCommon: "花", romajiCommon: "Hana", desc: "閃光花。" },
+              "Steel Garden": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
+            }
+          }
+        };
+
+        // 语音合成 Hook
+        const useSpeech = () => {
+          const speak = (text) => {
+            if (!window.speechSynthesis) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ja-JP';
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+          };
+          return { speak };
+        };
+
+        function App() {
+          const [agents, setAgents] = useState([]);
+          const [filteredAgents, setFilteredAgents] = useState([]);
+          const [selectedAgent, setSelectedAgent] = useState(null);
+          const [activeSkillIndex, setActiveSkillIndex] = useState(0);
+          const [loading, setLoading] = useState(true);
+          const [searchTerm, setSearchTerm] = useState('');
+          const [selectedRole, setSelectedRole] = useState("All");
+          
+          const [userOverrides, setUserOverrides] = useState({});
+          const [isEditing, setIsEditing] = useState(false);
+          const [editValue, setEditValue] = useState({ jp: '', romaji: '' });
+
+          const { speak } = useSpeech();
+
+          useEffect(() => {
+            const fetchAllData = async () => {
+              try {
+                setLoading(true);
+                const [resEn, resJa] = await Promise.all([
+                  fetch('https://valorant-api.com/v1/agents?language=en-US&isPlayableCharacter=true'),
+                  fetch('https://valorant-api.com/v1/agents?language=ja-JP&isPlayableCharacter=true')
+                ]);
+
+                const dataEn = await resEn.json();
+                const dataJa = await resJa.json();
+
+                if (dataEn.status !== 200 || dataJa.status !== 200) throw new Error("API Connection Failed");
+
+                const jaMap = new Map(dataJa.data.map(a => [a.uuid, a]));
+
+                const processedAgents = dataEn.data.map(agentEn => {
+                  const agentJa = jaMap.get(agentEn.uuid);
+                  const localData = AGENT_LOCAL_DATA[agentEn.displayName] || { nameCn: agentEn.displayName };
+
+                  const skills = agentEn.abilities
+                    .filter(skill => skill.slot !== 'Passive')
+                    .map(skillEn => {
+                      const skillJa = agentJa?.abilities.find(s => s.slot === skillEn.slot);
+                      const localCallout = localData.callouts?.[skillEn.displayName];
+
+                      return {
+                        slot: skillEn.slot,
+                        nameEn: skillEn.displayName,
+                        icon: skillEn.displayIcon,
+                        jpName: skillJa?.displayName || skillEn.displayName,
+                        jpCommon: localCallout?.jpCommon || '---',
+                        romajiCommon: localCallout?.romajiCommon || '---',
+                        desc: localCallout?.desc || skillJa?.description
+                      };
+                    })
+                    .sort((a, b) => {
+                      const order = { 'Ability1': 1, 'Ability2': 2, 'Grenade': 3, 'Ultimate': 4 };
+                      return (order[a.slot] || 9) - (order[b.slot] || 9);
+                    })
+                    .map((skill, idx) => ({
+                      ...skill,
+                      displayKey: ['C', 'Q', 'E', 'X'][idx] || '?'
+                    }));
+
+                  return {
+                    id: agentEn.uuid,
+                    name: agentEn.displayName,
+                    nameCn: localData.nameCn,
+                    role: agentEn.role?.displayName || 'Agent',
+                    fullPortrait: agentEn.fullPortrait,
+                    background: agentEn.background,
+                    colors: ['#' + (agentEn.backgroundGradientColors?.[0] || '18181b'), '#' + (agentEn.backgroundGradientColors?.[1] || '000000')],
+                    skills: skills
+                  };
+                });
+
+                processedAgents.sort((a, b) => {
+                  const indexA = POPULARITY_RANK.indexOf(a.name);
+                  const indexB = POPULARITY_RANK.indexOf(b.name);
+                  if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                  if (indexA !== -1) return -1;
+                  if (indexB !== -1) return 1;
+                  return a.name.localeCompare(b.name);
+                });
+
+                setAgents(processedAgents);
+                setFilteredAgents(processedAgents);
+                setLoading(false);
+              } catch (err) {
+                console.error(err);
+                setLoading(false);
+              }
+            };
+
+            fetchAllData();
+          }, []);
+
+          useEffect(() => {
+            const term = searchTerm.toLowerCase();
+            let filtered = agents;
+            
+            if (selectedRole !== "All") {
+              filtered = filtered.filter(agent => agent.role === selectedRole);
+            }
+            
+            if (term !== '') {
+                filtered = filtered.filter(agent => 
+                  agent.name.toLowerCase().includes(term) || 
+                  (agent.nameCn && agent.nameCn.toLowerCase().includes(term))
+                );
+            }
+            
+            setFilteredAgents(filtered);
+          }, [searchTerm, selectedRole, agents]);
+
+          useEffect(() => {
+            if (selectedAgent) {
+              setActiveSkillIndex(0);
+              setIsEditing(false);
+            }
+          }, [selectedAgent]);
+
+          const handleSaveEdit = (agentId, slot) => {
+            const key = `${agentId}_${slot}`;
+            setUserOverrides(prev => ({
+              ...prev,
+              [key]: { jp: editValue.jp, romaji: editValue.romaji }
+            }));
+            setIsEditing(false);
+          };
+
+          const getDisplayValues = (agentId, skill) => {
+            if (!skill) return { jp: '---', romaji: '---' };
+            const key = `${agentId}_${skill.slot}`;
+            const override = userOverrides[key];
+            return {
+              jp: override ? override.jp : skill.jpCommon,
+              romaji: override ? override.romaji : skill.romajiCommon
+            };
+          };
+
+          const startEditing = (currentJp, currentRomaji) => {
+            setEditValue({ jp: currentJp, romaji: currentRomaji });
+            setIsEditing(true);
+          };
+
+          if (loading) {
+            return (
+              <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white">
+                <div className="animate-pulse flex flex-col items-center">
+                  <div className="w-12 h-12 rounded-full border-2 border-white/20 border-t-[#ff4655] animate-spin mb-6"></div>
+                  <p className="text-white/40 text-sm font-medium tracking-wide">Loading Agents...</p>
+                </div>
+              </div>
+            );
+          }
+
+          if (!selectedAgent) {
+            return (
+              <div className="min-h-screen bg-black text-white selection:bg-[#ff4655]/30">
+                
+                {/* Navbar */}
+                <nav className="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
+                  <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {/* Logo Container - V Symbol (Black/White) */}
+                      <div className="relative h-9 w-9 rounded-[10px] bg-white/5 flex items-center justify-center overflow-hidden border border-white/10 shadow-[inset_0_1px_3px_rgba(255,255,255,0.1)] group hover:bg-white/10 transition-colors">
+                        {/* Internal Highlight/Sheen */}
+                        <div className="absolute top-0 w-full h-[40%] bg-gradient-to-b from-white/20 to-transparent pointer-events-none transition-all duration-500 group-hover:from-white/30"></div>
+                        {/* Official Black and White V Logo */}
+                        <svg viewBox="0 0 100 100" className="w-5 h-5 fill-white drop-shadow-md z-10">
+                           <path d="M99.25 48.66V10.28L85.1 4.18L50.48 83.05L15.26 4.6L1.13 10.68L42.54 95.82H59.25L99.25 48.66Z" />
+                        </svg>
+                      </div>
+                      <span className="font-semibold text-xl tracking-tight text-white/90 font-['PingFang_TC'] hidden sm:block">Valo<span className="text-[#ff4655]">の</span>日本語</span>
+                    </div>
+                    
+                  </div>
+                </nav>
+
+                {/* Content */}
+                <div className="max-w-7xl mx-auto px-6 pt-32 pb-20">
+                  
+                  {/* Header Section: Title + Search Bar Grid Layout */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12 animate-fade-up items-end" style={{ animationDelay: '0s' }}>
+                    
+                    {/* Title Section */}
+                    <div className="col-span-1 flex flex-col gap-2">
+                      <h1 className="text-6xl font-bold tracking-tight bg-gradient-to-br from-white to-white/50 bg-clip-text text-transparent font-['PingFang_TC'] leading-tight">
+                        特務
+                      </h1>
+                      <p className="text-white/40 text-lg font-medium">Master the Japanese callouts.</p>
+                    </div>
+
+                    {/* Search Bar */}
+                    <div className="col-span-1 md:col-span-2 md:col-start-2 w-full">
+                       <div className="relative group w-full">
+                          <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-white/10 rounded-2xl blur-md transition-all duration-500 opacity-0 group-focus-within:opacity-100 group-hover:opacity-50"></div>
+                          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-white transition-colors z-10" size={20} />
+                          <input 
+                            type="text" 
+                            placeholder="搜尋特務..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-14 pr-6 text-base text-white focus:outline-none focus:bg-white/10 focus:border-white/20 transition-all duration-300 placeholder:text-white/20 relative z-0 h-14"
+                          />
+                       </div>
+                    </div>
+
+                  </div>
+
+                  {/* Role Filter Bar */}
+                  <div className="mb-10 p-1.5 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full flex items-center gap-1 w-fit animate-fade-up flex-wrap" style={{ animationDelay: '0.1s' }}>
+                     {AGENT_ROLES.map(role => (
+                       <button
+                         key={role}
+                         onClick={() => setSelectedRole(role)}
+                         className={`
+                           px-5 py-2 rounded-full text-sm font-medium transition-all duration-300
+                           ${selectedRole === role 
+                             ? 'bg-white text-black shadow-lg shadow-white/10 scale-105' 
+                             : 'text-white/60 hover:text-white hover:bg-white/5'}
+                         `}
+                       >
+                         {role}
+                       </button>
+                     ))}
+                  </div>
+
+                  {/* Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {filteredAgents.map((agent, index) => (
+                      <div 
+                        key={agent.id}
+                        onClick={() => setSelectedAgent(agent)}
+                        className="group relative h-[380px] rounded-[32px] overflow-hidden cursor-pointer bg-white/5 backdrop-blur-3xl border border-white/5 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-[#ff4655]/10 animate-fade-up"
+                        style={{ animationDelay: `${0.1 + index * 0.05}s` }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-[150%] animate-sheen pointer-events-none z-20 w-full h-full" />
+
+                        <div 
+                          className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-700"
+                          style={{ background: `linear-gradient(to bottom right, ${agent.colors[0]}, transparent)` }}
+                        />
+                        
+                        <div className="absolute inset-0 flex items-center justify-center translate-y-8 group-hover:translate-y-4 group-hover:scale-105 transition-transform duration-700 ease-out">
+                            <img 
+                                src={agent.fullPortrait} 
+                                alt={agent.name}
+                                className="h-[120%] object-cover drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)]"
+                                loading="lazy"
+                            />
+                        </div>
+
+                        <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black via-black/60 to-transparent pt-24 z-10">
+                          <div className="flex items-center gap-2 mb-1 opacity-80 group-hover:opacity-100 transition-opacity transform group-hover:-translate-y-1 duration-300">
+                            <span className="px-3 py-1 bg-white/10 backdrop-blur-md text-[10px] font-semibold uppercase text-white/90 rounded-full border border-white/10 shadow-sm">
+                              {agent.role}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline justify-between">
+                             <h3 className="text-3xl font-bold text-white tracking-tight">{agent.name}</h3>
+                             {/* 中文名已在此处移除 */}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          // Detail View
+          const activeSkill = selectedAgent.skills[activeSkillIndex];
+          const displayValues = getDisplayValues(selectedAgent.id, activeSkill);
+
+          return (
+            <div className="min-h-screen bg-black text-white selection:bg-[#ff4655]/30 overflow-hidden font-['PingFang_TC']">
+              
+              <div className="fixed inset-0 z-0 pointer-events-none">
+                 <div 
+                    className="absolute top-[-20%] right-[-10%] w-[80vw] h-[80vw] rounded-full blur-[120px] opacity-20 transition-colors duration-1000 animate-blob"
+                    style={{ backgroundColor: selectedAgent.colors[0] }}
+                 />
+                 <div className="absolute bottom-[-20%] left-[-10%] w-[60vw] h-[60vw] rounded-full blur-[100px] opacity-10 bg-zinc-800 animate-blob" style={{ animationDelay: '2s' }} />
+              </div>
+
+              <nav className="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-xl border-b border-white/5">
+                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+                  <button 
+                    onClick={() => setSelectedAgent(null)}
+                    className="flex items-center gap-2 text-white/60 hover:text-white transition-colors rounded-full px-3 py-1.5 hover:bg-white/5"
+                  >
+                    <ArrowLeft size={18} />
+                    <span className="text-sm font-medium">All Agents</span>
+                  </button>
+                  <div className="font-semibold text-white/90">
+                    {selectedAgent.name}
+                  </div>
+                </div>
+              </nav>
+
+              <div className="relative z-10 pt-24 pb-12 max-w-7xl mx-auto px-6 h-screen flex flex-col lg:flex-row gap-12 items-center lg:items-start">
+                
+                <div className="relative w-full lg:w-1/2 h-[40vh] lg:h-[80vh] flex items-center justify-center animate-fade-up">
+                   <img 
+                     src={selectedAgent.fullPortrait} 
+                     alt={selectedAgent.name}
+                     className="h-full w-auto object-contain drop-shadow-[0_0_60px_rgba(255,255,255,0.1)]"
+                   />
+                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[20vw] font-bold text-white/5 -z-10 select-none">
+                     {selectedAgent.name[0]}
+                   </div>
+                </div>
+
+                <div className="w-full lg:w-1/2 flex flex-col gap-8 max-w-xl animate-fade-up" style={{ animationDelay: '0.1s' }}>
+                  
+                  <div className="flex gap-4 p-2 bg-white/5 backdrop-blur-xl rounded-[24px] border border-white/10 w-fit mx-auto lg:mx-0 shadow-2xl">
+                    {selectedAgent.skills.map((skill, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setActiveSkillIndex(index)}
+                        className={`
+                          relative w-16 h-16 rounded-[18px] flex items-center justify-center transition-all duration-300
+                          ${index === activeSkillIndex 
+                            ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.3)] scale-105' 
+                            : 'text-white/40 hover:text-white hover:bg-white/10'}
+                        `}
+                      >
+                        <img 
+                          src={skill.icon} 
+                          alt={skill.nameEn} 
+                          className={`w-8 h-8 object-contain transition-transform duration-300 ${index === activeSkillIndex ? 'brightness-0 scale-110' : 'invert brightness-200'}`}
+                        />
+                        {index === activeSkillIndex && (
+                            <span className="absolute -bottom-2 w-1 h-1 bg-white rounded-full opacity-50"></span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div key={activeSkill.nameEn} className="space-y-6 animate-scale-in">
+                    <div className="space-y-2 text-center lg:text-left">
+                      <h2 className="text-4xl font-bold tracking-tight text-white">{activeSkill.nameEn}</h2>
+                      <p className="text-lg text-white/50 font-medium leading-relaxed font-['PingFang_TC']">{activeSkill.desc}</p>
+                    </div>
+
+                    <div className="grid gap-4 mt-8">
+                      
+                      <div className="group relative overflow-hidden rounded-[24px] bg-white/5 backdrop-blur-xl border border-white/10 p-6 transition-all hover:bg-white/10 shadow-lg">
+                         <div className="flex justify-between items-center">
+                            <div>
+                               <p className="text-xs font-semibold uppercase tracking-wider text-white/30 mb-1">Official Name</p>
+                               <div className="flex flex-col">
+                                  <p className="text-2xl font-bold text-white font-['PingFang_TC'] jp-name-truncate" title={activeSkill.jpName}>{activeSkill.jpName}</p>
+                               </div>
+                            </div>
+                            <button 
+                              onClick={() => speak(activeSkill.jpName)}
+                              className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:bg-white hover:text-black hover:scale-110 active:scale-95 transition-all cursor-pointer"
+                            >
+                              <Volume2 size={22} />
+                            </button>
+                         </div>
+                      </div>
+
+                      <div className="group relative overflow-hidden rounded-[24px] bg-white/10 backdrop-blur-xl border border-white/20 p-6 transition-all hover:border-[#ff4655]/40 hover:shadow-[0_0_30px_rgba(255,70,85,0.15)] shadow-xl">
+                         <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#ff4655]/10 rounded-full blur-3xl group-hover:bg-[#ff4655]/20 transition-colors duration-500" />
+
+                         <div className="relative z-10">
+                            <div className="flex justify-between items-start mb-3">
+                               <div className="flex items-center gap-2">
+                                  <Sparkles size={14} className="text-[#ff4655]" />
+                                  <p className="text-xs font-semibold uppercase tracking-wider text-[#ff4655]/90">Common Name (常用名稱)</p>
+                               </div>
+                               
+                               {!isEditing && (
+                                 <button 
+                                   onClick={() => startEditing(displayValues.jp, displayValues.romaji)}
+                                   className="text-white/20 hover:text-white transition-colors p-1"
+                                 >
+                                   <Edit2 size={14} />
+                                 </button>
+                               )}
+                            </div>
+
+                            {isEditing ? (
+                              <div className="space-y-4 mt-2 animate-fade-up">
+                                <div>
+                                  <label className="text-[10px] text-white/40 uppercase font-bold block mb-1">Japanese</label>
+                                  <input 
+                                    type="text" 
+                                    value={editValue.jp}
+                                    onChange={(e) => setEditValue({...editValue, jp: e.target.value})}
+                                    className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#ff4655]/50 transition-colors font-bold text-lg"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-[10px] text-white/40 uppercase font-bold block mb-1">Romaji</label>
+                                  <input 
+                                    type="text" 
+                                    value={editValue.romaji}
+                                    onChange={(e) => setEditValue({...editValue, romaji: e.target.value})}
+                                    className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-[#ff4655]/50 transition-colors"
+                                  />
+                                </div>
+                                <div className="flex gap-2 pt-2">
+                                   <button 
+                                      onClick={() => setIsEditing(false)}
+                                      className="flex-1 py-3 rounded-xl bg-white/5 text-white/60 hover:bg-white/10 hover:text-white text-xs font-bold transition-colors"
+                                   >
+                                     Cancel
+                                   </button>
+                                   <button 
+                                      onClick={() => handleSaveEdit(selectedAgent.id, activeSkill.slot)}
+                                      className="flex-1 py-3 rounded-xl bg-[#ff4655] text-white hover:bg-[#ff4655]/90 text-xs font-bold transition-colors shadow-lg shadow-[#ff4655]/20"
+                                   >
+                                     Save Changes
+                                   </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex justify-between items-center mt-2">
+                                  <div className="flex flex-col">
+                                     <div className="text-4xl font-bold text-white tracking-tight font-['PingFang_TC'] jp-name-truncate" title={displayValues.jp}>
+                                        {displayValues.jp}
+                                     </div>
+                                     <div className="text-base font-medium text-white/50 font-mono mt-1 tracking-wide">
+                                        {displayValues.romaji}
+                                     </div>
+                                  </div>
+
+                                  <button 
+                                    onClick={() => speak(displayValues.jp)}
+                                    className="w-16 h-16 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                                  >
+                                    <Volume2 size={28} />
+                                  </button>
+                              </div>
+                            )}
+                         </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        // 渲染组件
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
