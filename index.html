@@ -1,265 +1,98 @@
-
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valoの日本語</title>
     
-    <!-- Critical Polyfills for Older Browsers/WebViews (Must be loaded first) -->
+    <!-- 1. 核心 Polyfills (防白屏关键：让旧浏览器听懂新语法) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.37.1/minified.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/regenerator-runtime/0.14.1/runtime.min.js"></script>
     
-    <!-- Tailwind CSS CDN with Configuration -->
+    <!-- 2. Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class', // 啟用手動切換深色模式
+            darkMode: 'class',
             theme: {
                 extend: {
-                    colors: {
-                        // 自定義顏色擴展
-                    }
+                    colors: {}
                 }
             }
         }
     </script>
-    <!-- React & Babel CDNs -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
-    <!-- Babel with specific configuration for compatibility -->
+
+    <!-- 3. React (UMD 全局版本) -->
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    
+    <!-- 4. Babel (用于编译 JSX) -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
-    <!-- Configure Babel to NOT transform modules (fixes 'require is not defined') while keeping env preset -->
-    <script>
-        window.Babel = {
-            presets: [
-                ["env", {
-                    "targets": {
-                        "browsers": ["> 1%", "last 2 versions", "not ie <= 8"]
-                    },
-                    "modules": false // Crucial: Keep import/export syntax for browser
-                }],
-                "react"
-            ]
-        };
-    </script>
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js" type="module"></script>
+    <!-- 5. Firebase Compat SDKs (防白屏关键：使用兼容版，不依赖 ES Module) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     
     <style>
-        /* 全局字體設置，確保 PingFang TC 優先 */
+        /* 全局字體 */
         body {
             font-family: "PingFang TC", "PingFang SC", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-            /* 移除硬編碼背景色，由 Tailwind 類控制 */
             transition: background-color 0.3s ease, color 0.3s ease;
         }
+        #root { font-family: inherit; }
+
+        /* 動畫定義 */
+        :root { --ease-apple: cubic-bezier(0.25, 0.1, 0.25, 1); }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-up { animation: fadeUp 0.6s var(--ease-apple) forwards; opacity: 0; }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.98) translateY(5px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .animate-scale-in { animation: scaleIn 0.4s var(--ease-apple) forwards; }
+        @keyframes sheen { 0% { transform: translateX(-150%) skewX(-15deg); } 100% { transform: translateX(150%) skewX(-15deg); } }
+        .group:hover .animate-sheen { animation: sheen 0.8s ease-in-out; }
+        @keyframes blob-bounce { 0% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0, 0) scale(1); } }
+        .animate-blob { animation: blob-bounce 10s infinite alternate; }
+        .jp-name-truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* 避免 Tailwind 的默認字體干擾 */
-        #root {
-            font-family: inherit;
-        }
-
-        /* ------------------------------------------------------------------
-         * CSS 關鍵幀動畫
-         * ------------------------------------------------------------------
-         */
-        :root {
-            --ease-apple: cubic-bezier(0.25, 0.1, 0.25, 1);
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* 浮雕与光效 */
+        .dark .emboss-soft { box-shadow: 5px 5px 10px rgba(0,0,0,0.8), -2px -2px 5px rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.03); background-color: #121212; }
+        .emboss-soft { box-shadow: 6px 6px 12px rgba(163,177,198,0.4), -4px -4px 10px rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.4); background-color: #e0e5ec; }
         
-        .animate-fade-up {
-            animation: fadeUp 0.6s var(--ease-apple) forwards;
-            opacity: 0;
-        }
-
-        @keyframes scaleIn {
-            from { opacity: 0; transform: scale(0.98) translateY(5px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .animate-scale-in {
-            animation: scaleIn 0.4s var(--ease-apple) forwards;
-        }
-
-        @keyframes sheen {
-            0% { transform: translateX(-150%) skewX(-15deg); }
-            100% { transform: translateX(150%) skewX(-15deg); }
-        }
-
-        .group:hover .animate-sheen {
-            animation: sheen 0.8s ease-in-out;
-        }
-
-        @keyframes blob-bounce {
-            0% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -50px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-            100% { transform: translate(0, 0) scale(1); }
-        }
-
-        .animate-blob {
-            animation: blob-bounce 10s infinite alternate;
-        }
+        .dark .emboss-frame { box-shadow: 5px 5px 10px rgba(0,0,0,0.8), -2px -2px 5px rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.03); background-color: #121212; }
+        .emboss-frame { box-shadow: 5px 5px 10px rgba(163,177,198,0.4), -5px -5px 10px rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.5); background-color: #e0e5ec; }
         
-        .jp-name-truncate {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        .dark .emboss-card { box-shadow: 8px 8px 15px rgba(0,0,0,0.9), -2px -2px 5px rgba(255,255,255,0.08); border-top: 1px solid rgba(255,255,255,0.08); border-left: 1px solid rgba(255,255,255,0.05); background-color: #121212; }
+        .emboss-card { box-shadow: 9px 9px 16px rgba(163,177,198,0.5), -9px -9px 16px rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.2); background-color: #e0e5ec; }
         
-        /* 3D 浮雕陰影 (Neumorphism) - 自適應深淺模式 */
+        .dark .emboss-pressed { box-shadow: inset 3px 3px 6px rgba(0,0,0,0.8), inset -1px -1px 2px rgba(255,255,255,0.08); background-color: #121212; color: #ff4655; }
+        .emboss-pressed { box-shadow: inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.8); background-color: #e0e5ec; color: #ff4655; }
         
-        /* 深色模式下的浮雕 */
-        .dark .emboss-soft {
-            box-shadow: 
-                5px 5px 10px rgba(0, 0, 0, 0.8), 
-                -2px -2px 5px rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            background-color: #121212;
-        }
+        .emboss-btn { box-shadow: 3px 3px 6px rgba(163,177,198,0.4), -2px -2px 5px rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.4); background-color: #e0e5ec; }
+        .dark .emboss-btn { box-shadow: 4px 4px 8px rgba(0,0,0,0.8), -1px -1px 3px rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.03); background-color: #121212; }
+        .dark .emboss-btn:active { box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8), inset -1px -1px 2px rgba(255,255,255,0.08); }
+        .emboss-btn:active { box-shadow: inset 2px 2px 5px rgba(163,177,198,0.6), inset -2px -2px 5px rgba(255,255,255,0.8); }
         
-        /* 淺色模式下的浮雕 */
-        .emboss-soft {
-            box-shadow: 
-                6px 6px 12px rgba(163, 177, 198, 0.4), 
-                -4px -4px 10px rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            background-color: #e0e5ec;
-        }
-
-        /* 凸起的外框浮雕 (用於特務分類) - 深色 */
-        .dark .emboss-frame {
-            box-shadow: 
-                5px 5px 10px rgba(0, 0, 0, 0.8), 
-                -2px -2px 5px rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            background-color: #121212;
-        }
-
-        /* 凸起的外框浮雕 (用於特務分類) - 淺色 */
-        .emboss-frame {
-            box-shadow: 
-                5px 5px 10px rgba(163, 177, 198, 0.4), 
-                -5px -5px 10px rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            background-color: #e0e5ec;
-        }
-
-        /* 卡片浮雕 - 深色 */
-        .dark .emboss-card {
-            box-shadow: 
-                8px 8px 15px rgba(0, 0, 0, 0.9), 
-                -2px -2px 5px rgba(255, 255, 255, 0.08);
-            border-top: 1px solid rgba(255,255,255,0.08);
-            border-left: 1px solid rgba(255,255,255,0.05);
-            background-color: #121212;
-        }
-
-        /* 卡片浮雕 - 淺色 */
-        .emboss-card {
-            box-shadow: 
-                9px 9px 16px rgba(163, 177, 198, 0.5), 
-                -9px -9px 16px rgba(255, 255, 255, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background-color: #e0e5ec;
-        }
-
-        /* 按鈕按下/激活狀態 - 深色 */
-        .dark .emboss-pressed {
-            box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.8), inset -1px -1px 2px rgba(255, 255, 255, 0.08);
-            background-color: #121212;
-            color: #ff4655;
-        }
-
-        /* 按鈕按下/激活狀態 - 淺色 */
-        .emboss-pressed {
-            box-shadow: inset 3px 3px 6px rgba(163, 177, 198, 0.6), inset -3px -3px 6px rgba(255, 255, 255, 0.8);
-            background-color: #e0e5ec;
-            color: #ff4655;
-        }
-
-        /* 小按鈕浮雕 (用於返回按鈕) - 淺色 */
-        .emboss-btn {
-            box-shadow: 
-                3px 3px 6px rgba(163, 177, 198, 0.4), 
-                -2px -2px 5px rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            background-color: #e0e5ec;
-        }
-        /* 小按鈕浮雕 - 深色 */
-        .dark .emboss-btn {
-             box-shadow: 
-                4px 4px 8px rgba(0, 0, 0, 0.8), 
-                -1px -1px 3px rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            background-color: #121212;
-        }
-        .dark .emboss-btn:active {
-            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.8), inset -1px -1px 2px rgba(255, 255, 255, 0.08);
-        }
-        .emboss-btn:active {
-            box-shadow: inset 2px 2px 5px rgba(163, 177, 198, 0.6), inset -2px -2px 5px rgba(255, 255, 255, 0.8);
-        }
+        @keyframes liquid-glow { 0% { box-shadow: 0 0 10px rgba(255,255,255,0.05), inset 0 0 0 rgba(255,255,255,0.05); } 50% { box-shadow: 0 0 20px rgba(255,255,255,0.15), inset 0 0 10px rgba(255,255,255,0.1); } 100% { box-shadow: 0 0 10px rgba(255,255,255,0.05), inset 0 0 0 rgba(255,255,255,0.05); } }
+        .dark .animate-liquid:hover, .dark .animate-liquid:focus-within { animation: liquid-glow 3s infinite ease-in-out; }
         
-        /* 液體玻璃流光效果 (僅用於搜索框) */
-        @keyframes liquid-glow {
-            0% { box-shadow: 0 0 10px rgba(255,255,255,0.05), inset 0 0 0 rgba(255,255,255,0.05); }
-            50% { box-shadow: 0 0 20px rgba(255,255,255,0.15), inset 0 0 10px rgba(255,255,255,0.1); }
-            100% { box-shadow: 0 0 10px rgba(255,255,255,0.05), inset 0 0 0 rgba(255,255,255,0.05); }
-        }
-
-        .dark .animate-liquid:hover, .dark .animate-liquid:focus-within {
-            animation: liquid-glow 3s infinite ease-in-out;
-        }
-        
-        /* 自定義滾動條 */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #71717a; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a1a1aa; 
-        }
-
-        /* Saving Indicator Animation */
-        @keyframes pulse-green {
-            0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
-        }
-        .saving-pulse {
-            animation: pulse-green 2s infinite;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #71717a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a1a1aa; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
-    <script type="text/babel" data-type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
+    <!-- 注意：这里去掉了 type="module"，只保留 type="text/babel"，这是兼容旧浏览器的关键 -->
+    <script type="text/babel">
+        // 从全局对象解构，而不是 import (Via 浏览器不支持 import)
         const { useState, useEffect, useMemo } = React;
 
         // ------------------------------------------------------------------
-        // Firebase Setup
+        // Firebase Setup (Compat Mode)
         // ------------------------------------------------------------------
         const firebaseConfig = {
-          apiKey: "AIzaSyDjhgvA9DIDKQY1r4bYyTy0Z0G3PXRAohM", // Restored key from user upload
+          apiKey: "AIzaSyDjhgvA9DIDKQY1r4bYyTy0Z0G3PXRAohM", 
           authDomain: "valorant-japanese.firebaseapp.com",
           projectId: "valorant-japanese",
           storageBucket: "valorant-japanese.firebasestorage.app",
@@ -268,348 +101,85 @@
           measurementId: "G-L7VBY0QLPE"
         };
         
-        // Use system provided config if available (Canvas env), otherwise fallback to hardcoded config (GitHub env)
-        const app = initializeApp(typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        // Fallback to a fixed string if __app_id is missing (GitHub env) to ensure data path consistency
+        // 初始化 Firebase (全局 firebase 对象)
+        // 检查是否已初始化，防止热重载报错
+        if (!firebase.apps.length) {
+            firebase.initializeApp(typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig);
+        }
+        
+        const auth = firebase.auth();
+        const db = firebase.firestore();
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'valorant-jp-web';
 
         // ------------------------------------------------------------------
-        // 圖標組件
+        // SVG 图标组件
         // ------------------------------------------------------------------
         const IconBase = ({ children, size = 24, className = "" }) => (
-            <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width={size} 
-                height={size} 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                className={className}
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
                 {children}
             </svg>
         );
-
         const Volume2 = (props) => (
-            <IconBase {...props}>
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-            </IconBase>
+            <IconBase {...props}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></IconBase>
         );
-
         const ArrowLeft = (props) => (
-            <IconBase {...props}>
-                <path d="m12 19-7-7 7-7" />
-                <path d="M19 12H5" />
-            </IconBase>
+            <IconBase {...props}><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></IconBase>
         );
-
         const Search = (props) => (
-            <IconBase {...props}>
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
-            </IconBase>
+            <IconBase {...props}><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></IconBase>
         );
-
         const Edit2 = (props) => (
-            <IconBase {...props}>
-                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-            </IconBase>
+            <IconBase {...props}><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></IconBase>
         );
-
         const Save = (props) => (
-            <IconBase {...props}>
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                <polyline points="17 21 17 13 7 13 7 21" />
-                <polyline points="7 3 7 8 15 8" />
-            </IconBase>
+            <IconBase {...props}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></IconBase>
         );
-
-        const Cloud = (props) => (
-             <IconBase {...props}>
-                <path d="M17.5 19c0-3.037-2.463-5.5-5.5-5.5S6.5 15.963 6.5 19" />
-                <path d="M20.39 15.429A5 5 0 0 0 16.5 7c-3.063 0-5.636 2.054-6.328 5.035" />
-                <path d="M11 12.035a3 3 0 1 0-3.992 4.414" />
-             </IconBase>
-        );
-        
         const Sun = (props) => (
-            <IconBase {...props}>
-                <circle cx="12" cy="12" r="4" />
-                <path d="M12 2v2" /><path d="M12 20v2" />
-                <path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" />
-                <path d="M2 12h2" /><path d="M20 12h2" />
-                <path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" />
-            </IconBase>
+            <IconBase {...props}><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></IconBase>
         );
-
         const Moon = (props) => (
-            <IconBase {...props}>
-                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-            </IconBase>
+            <IconBase {...props}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></IconBase>
         );
 
         // ------------------------------------------------------------------
-        // 數據配置區
+        // 数据配置
         // ------------------------------------------------------------------
-        const POPULARITY_RANK = [
-          "Jett", "Reyna", "Clove", "Omen", "Sova", "Gekko", "Sage", "Iso", 
-          "Cypher", "Neon", "Raze", "Chamber", "Viper", "Yoru", "Killjoy", 
-          "Breach", "Skye", "Fade", "Brimstone", "KAY/O", "Deadlock", 
-          "Astra", "Harbor", "Phoenix", "Vyse"
-        ];
-
+        const POPULARITY_RANK = ["Jett", "Reyna", "Clove", "Omen", "Sova", "Gekko", "Sage", "Iso", "Cypher", "Neon", "Raze", "Chamber", "Viper", "Yoru", "Killjoy", "Breach", "Skye", "Fade", "Brimstone", "KAY/O", "Deadlock", "Astra", "Harbor", "Phoenix", "Vyse"];
         const AGENT_ROLES = ["All", "Duelist", "Controller", "Initiator", "Sentinel"];
-
         const AGENT_LOCAL_DATA = {
-          "Jett": {
-            nameCn: "婕提",
-            callouts: {
-              "Cloudburst": { jpCommon: "モク", romajiCommon: "Moku", desc: "煙霧。" },
-              "Updraft": { jpCommon: "アップドラフト", romajiCommon: "Appudorafuto", desc: "升空。" },
-              "Tailwind": { jpCommon: "エントリー", romajiCommon: "Entorii", desc: "衝刺/進點。" },
-              "Blade Storm": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
-            }
-          },
-          "Reyna": {
-            nameCn: "蕾娜",
-            callouts: {
-              "Leer": { jpCommon: "目", romajiCommon: "Me", desc: "眼睛。" },
-              "Devour": { jpCommon: "回復", romajiCommon: "Kaifuku", desc: "回血。" },
-              "Dismiss": { jpCommon: "ディスミス", romajiCommon: "Disumisu", desc: "無敵。" },
-              "Empress": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "女皇。" }
-            }
-          },
-          "Phoenix": {
-            nameCn: "鳳凰",
-            callouts: {
-              "Blaze": { jpCommon: "壁", romajiCommon: "Kabe", desc: "火牆。" },
-              "Curveball": { jpCommon: "フラッシュ", romajiCommon: "Furasshu", desc: "閃光。" },
-              "Hot Hands": { jpCommon: "モロトフ", romajiCommon: "Morotofu", desc: "燃燒彈。" },
-              "Run it Back": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
-            }
-          },
-          "Raze": {
-            nameCn: "芮茲",
-            callouts: {
-              "Boom Bot": { jpCommon: "ドローン", romajiCommon: "Doroon", desc: "小車。" },
-              "Blast Pack": { jpCommon: "サッチェル", romajiCommon: "Saccheru", desc: "炸藥包。" },
-              "Paint Shells": { jpCommon: "グレ", romajiCommon: "Gure", desc: "手雷。" },
-              "Showstopper": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "火箭筒。" }
-            }
-          },
-          "Yoru": {
-            nameCn: "夜戮",
-            callouts: {
-              "Fakeout": { jpCommon: "デコイ", romajiCommon: "Dekoi", desc: "假身。" },
-              "Blindside": { jpCommon: "フラッシュ", romajiCommon: "Furasshu", desc: "閃光。" },
-              "Gatecrash": { jpCommon: "テレポート", romajiCommon: "Terepooto", desc: "傳送。" },
-              "Dimensional Drift": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
-            }
-          },
-          "Neon": {
-            nameCn: "妮虹",
-            callouts: {
-              "Fast Lane": { jpCommon: "壁", romajiCommon: "Kabe", desc: "電牆。" },
-              "Relay Bolt": { jpCommon: "スタン", romajiCommon: "Sutan", desc: "震盪。" },
-              "High Gear": { jpCommon: "走り", romajiCommon: "Hashiri", desc: "跑步。" },
-              "Overdrive": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
-            }
-          },
-          "Iso": {
-            nameCn: "依索",
-            callouts: {
-              "Contingency": { jpCommon: "壁", romajiCommon: "Kabe", desc: "防彈牆。" },
-              "Undercut": { jpCommon: "弱体化", romajiCommon: "Jakutaika", desc: "易伤。" },
-              "Double Tap": { jpCommon: "シールド", romajiCommon: "Shiirudo", desc: "護盾。" },
-              "Kill Contract": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "領域展開。" }
-            }
-          },
-          "Clove": {
-            nameCn: "珂蘿",
-            callouts: {
-              "Ruse": { jpCommon: "モク", romajiCommon: "Moku", desc: "煙霧。" },
-              "Meddle": { jpCommon: "弱体化", romajiCommon: "Jakutaika", desc: "腐壞。" },
-              "Pick-me-up": { jpCommon: "回復", romajiCommon: "Kaifuku", desc: "吸血。" },
-              "Not Dead Yet": { jpCommon: "復活", romajiCommon: "Fukkatsu", desc: "復活。" }
-            }
-          },
-          "Omen": {
-            nameCn: "歐姆",
-            callouts: {
-              "Shrouded Step": { jpCommon: "テレポート", romajiCommon: "Terepooto", desc: "傳送。" },
-              "Paranoia": { jpCommon: "パラ", romajiCommon: "Para", desc: "致盲。" },
-              "Dark Cover": { jpCommon: "モク", romajiCommon: "Moku", desc: "煙霧。" },
-              "From the Shadows": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "全圖傳送。" }
-            }
-          },
-          "Brimstone": {
-            nameCn: "煉獄",
-            callouts: {
-              "Incendiary": { jpCommon: "モロトフ", romajiCommon: "Morotofu", desc: "燃燒彈。" },
-              "Sky Smoke": { jpCommon: "モク", romajiCommon: "Moku", desc: "煙霧。" },
-              "Stim Beacon": { jpCommon: "ビーコン", romajiCommon: "Biikon", desc: "激素。" },
-              "Orbital Strike": { jpCommon: "空爆", romajiCommon: "Kuubaku", desc: "空襲。" }
-            }
-          },
-          "Viper": {
-            nameCn: "薇蝮",
-            callouts: {
-              "Snake Bite": { jpCommon: "毒", romajiCommon: "Doku", desc: "毒液。" },
-              "Poison Cloud": { jpCommon: "モク", romajiCommon: "Moku", desc: "毒煙。" },
-              "Toxic Screen": { jpCommon: "カーテン", romajiCommon: "Kaaten", desc: "毒幕。" },
-              "Viper's Pit": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
-            }
-          },
-          "Astra": {
-            nameCn: "亞星卓",
-            callouts: {
-              "Gravity Well": { jpCommon: "吸い込み", romajiCommon: "Suikomi", desc: "吸人。" },
-              "Nova Pulse": { jpCommon: "スタン", romajiCommon: "Sutan", desc: "震盪。" },
-              "Nebula": { jpCommon: "モク", romajiCommon: "Moku", desc: "煙霧。" },
-              "Cosmic Divide": { jpCommon: "壁", romajiCommon: "Kabe", desc: "大牆。" }
-            }
-          },
-          "Harbor": {
-            nameCn: "哈泊",
-            callouts: {
-              "Cascade": { jpCommon: "壁", romajiCommon: "Kabe", desc: "推牆。" },
-              "Cove": { jpCommon: "ドーム", romajiCommon: "Doomu", desc: "水盾。" },
-              "High Tide": { jpCommon: "カーテン", romajiCommon: "Kaaten", desc: "水牆。" },
-              "Reckoning": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
-            }
-          },
-          "Sova": {
-            nameCn: "蘇法",
-            callouts: {
-              "Owl Drone": { jpCommon: "ドローン", romajiCommon: "Doroon", desc: "無人機。" },
-              "Shock Bolt": { jpCommon: "ショック", romajiCommon: "震盪箭。" },
-              "Recon Bolt": { jpCommon: "リコン", romajiCommon: "Rikon", desc: "探測箭。" },
-              "Hunter's Fury": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
-            }
-          },
-          "Gekko": {
-            nameCn: "蓋克",
-            callouts: {
-              "Mosh Pit": { jpCommon: "モッシュ", romajiCommon: "Mosshu", desc: "毒潭。" },
-              "Wingman": { jpCommon: "ウィングマン", romajiCommon: "Winguman", desc: "皮蛋。" },
-              "Dizzy": { jpCommon: "ディジー", romajiCommon: "Dijii", desc: "丟丟。" },
-              "Thrash": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "鯊魚。" }
-            }
-          },
-          "Breach": {
-            nameCn: "叛奇",
-            callouts: {
-              "Aftershock": { jpCommon: "アフターショック", romajiCommon: "Afutaashokku", desc: "餘震。" },
-              "Flashpoint": { jpCommon: "フラッシュ", romajiCommon: "Furasshu", desc: "閃光。" },
-              "Fault Line": { jpCommon: "スタン", romajiCommon: "Sutan", desc: "震盪。" },
-              "Rolling Thunder": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
-            }
-          },
-          "Skye": {
-            nameCn: "絲凱",
-            callouts: {
-              "Regrowth": { jpCommon: "ヒール", romajiCommon: "Hiiru", desc: "治療。" },
-              "Trailblazer": { jpCommon: "犬", romajiCommon: "Inu", desc: "狗。" },
-              "Guiding Light": { jpCommon: "鳥", romajiCommon: "Tori", desc: "鳥。" },
-              "Seekers": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "追蹤。" }
-            }
-          },
-          "KAY/O": {
-            nameCn: "K/O",
-            callouts: {
-              "FRAGMENT": { jpCommon: "グレ", romajiCommon: "Gure", desc: "手雷。" },
-              "FLASH/DRIVE": { jpCommon: "フラッシュ", romajiCommon: "Furasshu", desc: "閃光。" },
-              "ZERO/POINT": { jpCommon: "ナイフ", romajiCommon: "Naifu", desc: "抑制刀。" },
-              "NULL/CMD": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
-            }
-          },
-          "Fade": {
-            nameCn: "菲德",
-            callouts: {
-              "Prowler": { jpCommon: "プラウラー", romajiCommon: "Purauraa", desc: "鬼犬。" },
-              "Seize": { jpCommon: "シーズ", romajiCommon: "Shiizu", desc: "束縛。" },
-              "Haunt": { jpCommon: "目", romajiCommon: "Me", desc: "眼。" },
-              "Nightfall": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
-            }
-          },
-          "Sage": {
-            nameCn: "聖祈",
-            callouts: {
-              "Barrier Orb": { jpCommon: "壁", romajiCommon: "Kabe", desc: "冰牆。" },
-              "Slow Orb": { jpCommon: "スロウ", romajiCommon: "Surou", desc: "減速球。" },
-              "Healing Orb": { jpCommon: "ヒール", romajiCommon: "Hiiru", desc: "治療。" },
-              "Resurrection": { jpCommon: "蘇生", romajiCommon: "Sosei", desc: "復活。" }
-            }
-          },
-          "Cypher": {
-            nameCn: "瑟符",
-            callouts: {
-              "Trapwire": { jpCommon: "ワイヤー", romajiCommon: "Waiyaa", desc: "絆線。" },
-              "Cyber Cage": { jpCommon: "ケージ", romajiCommon: "Keeji", desc: "煙霧籠。" },
-              "Spycam": { jpCommon: "カメラ", romajiCommon: "Kamera", desc: "攝像頭。" },
-              "Neural Theft": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
-            }
-          },
-          "Killjoy": {
-            nameCn: "愷宙",
-            callouts: {
-              "Nanoswarm": { jpCommon: "グレ", romajiCommon: "Gure", desc: "手雷。" },
-              "Alarmbot": { jpCommon: "アラームボット", romajiCommon: "Araamubotto", desc: "機器人。" },
-              "Turret": { jpCommon: "タレット", romajiCommon: "Taretto", desc: "砲台。" },
-              "Lockdown": { jpCommon: "ロックダウン", romajiCommon: "RokkuDaun", desc: "大招。" }
-            }
-          },
-          "Chamber": {
-            nameCn: "錢博爾",
-            callouts: {
-              "Trademark": { jpCommon: "トレードマーク", romajiCommon: "Toreedomaaku", desc: "陷阱。" },
-              "Headhunter": { jpCommon: "ヘッドハンター", romajiCommon: "Heddohantaa", desc: "小手槍。" },
-              "Rendezvous": { jpCommon: "テレポート", romajiCommon: "Terepooto", desc: "傳送。" },
-              "Tour De Force": { jpCommon: "オペ", romajiCommon: "Ope", desc: "大狙。" }
-            }
-          },
-          "Deadlock": {
-            nameCn: "蒂羅",
-            callouts: {
-              "GravNet": { jpCommon: "ネット", romajiCommon: "Netto", desc: "網。" },
-              "Sonic Sensor": { jpCommon: "センサー", romajiCommon: "Sensaa", desc: "傳感器。" },
-              "Barrier Mesh": { jpCommon: "壁", romajiCommon: "Kabe", desc: "屏障。" },
-              "Annihilation": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
-            }
-          },
-          "Vyse": {
-            nameCn: "薇絲",
-            callouts: {
-              "Razorvine": { jpCommon: "ヴァイン", romajiCommon: "Vain", desc: "藤蔓。" },
-              "Shear": { jpCommon: "壁", romajiCommon: "Kabe", desc: "隔離牆。" },
-              "Arc Rose": { jpCommon: "花", romajiCommon: "Hana", desc: "閃光花。" },
-              "Steel Garden": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
-            }
-          }
+          "Jett": { nameCn: "婕提", callouts: { "Cloudburst": { jpCommon: "モク", romajiCommon: "Moku" }, "Updraft": { jpCommon: "アップドラフト", romajiCommon: "Appudorafuto" }, "Tailwind": { jpCommon: "エントリー", romajiCommon: "Entorii" }, "Blade Storm": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Reyna": { nameCn: "蕾娜", callouts: { "Leer": { jpCommon: "目", romajiCommon: "Me" }, "Devour": { jpCommon: "回復", romajiCommon: "Kaifuku" }, "Dismiss": { jpCommon: "ディスミス", romajiCommon: "Disumisu" }, "Empress": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Phoenix": { nameCn: "鳳凰", callouts: { "Blaze": { jpCommon: "壁", romajiCommon: "Kabe" }, "Curveball": { jpCommon: "フラッシュ", romajiCommon: "Furasshu" }, "Hot Hands": { jpCommon: "モロトフ", romajiCommon: "Morotofu" }, "Run it Back": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Raze": { nameCn: "芮茲", callouts: { "Boom Bot": { jpCommon: "ドローン", romajiCommon: "Doroon" }, "Blast Pack": { jpCommon: "サッチェル", romajiCommon: "Saccheru" }, "Paint Shells": { jpCommon: "グレ", romajiCommon: "Gure" }, "Showstopper": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Yoru": { nameCn: "夜戮", callouts: { "Fakeout": { jpCommon: "デコイ", romajiCommon: "Dekoi" }, "Blindside": { jpCommon: "フラッシュ", romajiCommon: "Furasshu" }, "Gatecrash": { jpCommon: "テレポート", romajiCommon: "Terepooto" }, "Dimensional Drift": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Neon": { nameCn: "妮虹", callouts: { "Fast Lane": { jpCommon: "壁", romajiCommon: "Kabe" }, "Relay Bolt": { jpCommon: "スタン", romajiCommon: "Sutan" }, "High Gear": { jpCommon: "走り", romajiCommon: "Hashiri" }, "Overdrive": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Iso": { nameCn: "依索", callouts: { "Contingency": { jpCommon: "壁", romajiCommon: "Kabe" }, "Undercut": { jpCommon: "弱体化", romajiCommon: "Jakutaika" }, "Double Tap": { jpCommon: "シールド", romajiCommon: "Shiirudo" }, "Kill Contract": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Clove": { nameCn: "珂蘿", callouts: { "Ruse": { jpCommon: "モク", romajiCommon: "Moku" }, "Meddle": { jpCommon: "弱体化", romajiCommon: "Jakutaika" }, "Pick-me-up": { jpCommon: "回復", romajiCommon: "Kaifuku" }, "Not Dead Yet": { jpCommon: "復活", romajiCommon: "Fukkatsu" } } },
+          "Omen": { nameCn: "歐姆", callouts: { "Shrouded Step": { jpCommon: "テレポート", romajiCommon: "Terepooto" }, "Paranoia": { jpCommon: "パラ", romajiCommon: "Para" }, "Dark Cover": { jpCommon: "モク", romajiCommon: "Moku" }, "From the Shadows": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Brimstone": { nameCn: "煉獄", callouts: { "Incendiary": { jpCommon: "モロトフ", romajiCommon: "Morotofu" }, "Sky Smoke": { jpCommon: "モク", romajiCommon: "Moku" }, "Stim Beacon": { jpCommon: "ビーコン", romajiCommon: "Biikon" }, "Orbital Strike": { jpCommon: "空爆", romajiCommon: "Kuubaku" } } },
+          "Viper": { nameCn: "薇蝮", callouts: { "Snake Bite": { jpCommon: "毒", romajiCommon: "Doku" }, "Poison Cloud": { jpCommon: "モク", romajiCommon: "Moku" }, "Toxic Screen": { jpCommon: "カーテン", romajiCommon: "Kaaten" }, "Viper's Pit": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Astra": { nameCn: "亞星卓", callouts: { "Gravity Well": { jpCommon: "吸い込み", romajiCommon: "Suikomi" }, "Nova Pulse": { jpCommon: "スタン", romajiCommon: "Sutan" }, "Nebula": { jpCommon: "モク", romajiCommon: "Moku" }, "Cosmic Divide": { jpCommon: "壁", romajiCommon: "Kabe" } } },
+          "Harbor": { nameCn: "哈泊", callouts: { "Cascade": { jpCommon: "壁", romajiCommon: "Kabe" }, "Cove": { jpCommon: "ドーム", romajiCommon: "Doomu" }, "High Tide": { jpCommon: "カーテン", romajiCommon: "Kaaten" }, "Reckoning": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Sova": { nameCn: "蘇法", callouts: { "Owl Drone": { jpCommon: "ドローン", romajiCommon: "Doroon" }, "Shock Bolt": { jpCommon: "ショック", romajiCommon: "" }, "Recon Bolt": { jpCommon: "リコン", romajiCommon: "Rikon" }, "Hunter's Fury": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Gekko": { nameCn: "蓋克", callouts: { "Mosh Pit": { jpCommon: "モッシュ", romajiCommon: "Mosshu" }, "Wingman": { jpCommon: "ウィングマン", romajiCommon: "Winguman" }, "Dizzy": { jpCommon: "ディジー", romajiCommon: "Dijii" }, "Thrash": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Breach": { nameCn: "叛奇", callouts: { "Aftershock": { jpCommon: "アフターショック", romajiCommon: "Afutaashokku" }, "Flashpoint": { jpCommon: "フラッシュ", romajiCommon: "Furasshu" }, "Fault Line": { jpCommon: "スタン", romajiCommon: "Sutan" }, "Rolling Thunder": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Skye": { nameCn: "絲凱", callouts: { "Regrowth": { jpCommon: "ヒール", romajiCommon: "Hiiru" }, "Trailblazer": { jpCommon: "犬", romajiCommon: "Inu" }, "Guiding Light": { jpCommon: "鳥", romajiCommon: "Tori" }, "Seekers": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "KAY/O": { nameCn: "K/O", callouts: { "FRAGMENT": { jpCommon: "グレ", romajiCommon: "Gure" }, "FLASH/DRIVE": { jpCommon: "フラッシュ", romajiCommon: "Furasshu" }, "ZERO/POINT": { jpCommon: "ナイフ", romajiCommon: "Naifu" }, "NULL/CMD": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Fade": { nameCn: "菲德", callouts: { "Prowler": { jpCommon: "プラウラー", romajiCommon: "Purauraa" }, "Seize": { jpCommon: "シーズ", romajiCommon: "Shiizu" }, "Haunt": { jpCommon: "目", romajiCommon: "Me" }, "Nightfall": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Sage": { nameCn: "聖祈", callouts: { "Barrier Orb": { jpCommon: "壁", romajiCommon: "Kabe" }, "Slow Orb": { jpCommon: "スロウ", romajiCommon: "Surou" }, "Healing Orb": { jpCommon: "ヒール", romajiCommon: "Hiiru" }, "Resurrection": { jpCommon: "蘇生", romajiCommon: "Sosei" } } },
+          "Cypher": { nameCn: "瑟符", callouts: { "Trapwire": { jpCommon: "ワイヤー", romajiCommon: "Waiyaa" }, "Cyber Cage": { jpCommon: "ケージ", romajiCommon: "Keeji" }, "Spycam": { jpCommon: "カメラ", romajiCommon: "Kamera" }, "Neural Theft": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Killjoy": { nameCn: "愷宙", callouts: { "Nanoswarm": { jpCommon: "グレ", romajiCommon: "Gure" }, "Alarmbot": { jpCommon: "アラームボット", romajiCommon: "Araamubotto" }, "Turret": { jpCommon: "タレット", romajiCommon: "Taretto" }, "Lockdown": { jpCommon: "ロックダウン", romajiCommon: "RokkuDaun" } } },
+          "Chamber": { nameCn: "錢博爾", callouts: { "Trademark": { jpCommon: "トレードマーク", romajiCommon: "Toreedomaaku" }, "Headhunter": { jpCommon: "ヘッドハンター", romajiCommon: "Heddohantaa" }, "Rendezvous": { jpCommon: "テレポート", romajiCommon: "Terepooto" }, "Tour De Force": { jpCommon: "オペ", romajiCommon: "Ope" } } },
+          "Deadlock": { nameCn: "蒂羅", callouts: { "GravNet": { jpCommon: "ネット", romajiCommon: "Netto" }, "Sonic Sensor": { jpCommon: "センサー", romajiCommon: "Sensaa" }, "Barrier Mesh": { jpCommon: "壁", romajiCommon: "Kabe" }, "Annihilation": { jpCommon: "ウルト", romajiCommon: "Uruto" } } },
+          "Vyse": { nameCn: "薇絲", callouts: { "Razorvine": { jpCommon: "ヴァイン", romajiCommon: "Vain" }, "Shear": { jpCommon: "壁", romajiCommon: "Kabe" }, "Arc Rose": { jpCommon: "花", romajiCommon: "Hana" }, "Steel Garden": { jpCommon: "ウルト", romajiCommon: "Uruto" } } }
         };
 
-        // 語音合成 Hook - Enhanced for Mobile Compatibility
+        // 音频播放 Hook (针对移动端优化)
         const useSpeech = () => {
           const [voices, setVoices] = useState([]);
-
           useEffect(() => {
-            // Mobile (iOS/Android) needs explicit loading of voices
-            const updateVoices = () => {
-                const vs = window.speechSynthesis.getVoices();
-                setVoices(vs);
-            };
-
-            // Initial load
+            const updateVoices = () => setVoices(window.speechSynthesis.getVoices());
             updateVoices();
-
-            // Event listener for async loading
             if (window.speechSynthesis.onvoiceschanged !== undefined) {
                 window.speechSynthesis.onvoiceschanged = updateVoices;
             }
@@ -617,23 +187,15 @@
 
           const speak = (text) => {
             if (!window.speechSynthesis) return;
-            
-            // Cancel current speech to prevent queueing issues on mobile
-            window.speechSynthesis.cancel();
-
+            window.speechSynthesis.cancel(); // 防止队列堆积
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'ja-JP';
             utterance.rate = 0.9;
-            
-            // Try to find a Japanese voice explicitly
-            // This often helps on iOS/Android where default voice might not switch automatically
+            // 尝试显式匹配日语语音包
             if (voices.length > 0) {
                 const jaVoice = voices.find(v => v.lang.includes('ja') || v.lang.includes('JP'));
-                if (jaVoice) {
-                    utterance.voice = jaVoice;
-                }
+                if (jaVoice) utterance.voice = jaVoice;
             }
-
             window.speechSynthesis.speak(utterance);
           };
           return { speak };
@@ -648,16 +210,14 @@
           const [loading, setLoading] = useState(true);
           const [searchTerm, setSearchTerm] = useState('');
           const [selectedRole, setSelectedRole] = useState("All");
-          const [isDark, setIsDark] = useState(false); // Default to light mode (false)
-          
+          const [isDark, setIsDark] = useState(false);
           const [globalOverrides, setGlobalOverrides] = useState({});
           const [isEditing, setIsEditing] = useState(false);
           const [editValue, setEditValue] = useState({ jp: '', romaji: '' });
           const [isSaving, setIsSaving] = useState(false);
-
           const { speak } = useSpeech();
 
-          // 切換深色模式
+          // 主题切换
           useEffect(() => {
             if (isDark) {
                 document.documentElement.classList.add('dark');
@@ -665,54 +225,45 @@
                 document.body.style.color = 'white';
             } else {
                 document.documentElement.classList.remove('dark');
-                document.body.style.backgroundColor = '#e0e5ec'; // Light mode background
+                document.body.style.backgroundColor = '#e0e5ec';
                 document.body.style.color = '#1f2937';
             }
           }, [isDark]);
 
-          // 1. 初始化 Auth
+          // Auth 初始化 (Compat 写法)
           useEffect(() => {
             const initAuth = async () => {
               try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                  await signInWithCustomToken(auth, __initial_auth_token);
+                  await auth.signInWithCustomToken(__initial_auth_token);
                 } else {
-                   // Fallback to anonymous if no token provided (development mode)
-                   await signInAnonymously(auth);
+                   await auth.signInAnonymously();
                 }
               } catch (e) {
-                console.log("Auth fallback to anonymous due to error:", e);
-                try {
-                    await signInAnonymously(auth);
-                } catch (anonError) {
-                    console.error("Anonymous auth failed:", anonError);
-                }
+                console.log("Auth error:", e);
               }
             };
             initAuth();
-            const unsubscribe = onAuthStateChanged(auth, setUser);
+            const unsubscribe = auth.onAuthStateChanged(setUser);
             return () => unsubscribe();
           }, []);
 
-          // 2. 監聽 Firestore 數據
+          // Firestore 监听 (Compat 写法: db.collection(...))
           useEffect(() => {
             if (!user) return;
-            // Use Strict Path: artifacts/{appId}/public/data/{collectionName}
-            const overridesRef = collection(db, 'artifacts', appId, 'public', 'data', 'agent_overrides');
-            const unsubscribe = onSnapshot(overridesRef, 
-              (snapshot) => {
+            // 路径映射: artifacts/{appId}/public/data/agent_overrides
+            const unsubscribe = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('agent_overrides')
+              .onSnapshot((snapshot) => {
                 const overrides = {};
                 snapshot.forEach(doc => {
                   overrides[doc.id] = doc.data();
                 });
                 setGlobalOverrides(overrides);
-              },
-              (error) => console.error("Error fetching overrides:", error)
-            );
+              }, (error) => console.error("Error fetching overrides:", error));
             return () => unsubscribe();
           }, [user]);
 
-          // 3. 獲取特務數據 (Valorant API)
+          // 抓取 Valorant API 数据
           useEffect(() => {
             const fetchAllData = async () => {
               try {
@@ -721,42 +272,32 @@
                   fetch('https://valorant-api.com/v1/agents?language=en-US&isPlayableCharacter=true'),
                   fetch('https://valorant-api.com/v1/agents?language=ja-JP&isPlayableCharacter=true')
                 ]);
-
                 const dataEn = await resEn.json();
                 const dataJa = await resJa.json();
-
-                if (dataEn.status !== 200 || dataJa.status !== 200) throw new Error("API Connection Failed");
+                if (dataEn.status !== 200 || dataJa.status !== 200) throw new Error("API Error");
 
                 const jaMap = new Map(dataJa.data.map(a => [a.uuid, a]));
-
                 const processedAgents = dataEn.data.map(agentEn => {
                   const agentJa = jaMap.get(agentEn.uuid);
                   const localData = AGENT_LOCAL_DATA[agentEn.displayName] || { nameCn: agentEn.displayName };
-
                   const skills = agentEn.abilities
                     .filter(skill => skill.slot !== 'Passive')
                     .map(skillEn => {
                       const skillJa = agentJa?.abilities.find(s => s.slot === skillEn.slot);
                       const localCallout = localData.callouts?.[skillEn.displayName];
-
                       return {
                         slot: skillEn.slot,
                         nameEn: skillEn.displayName,
                         icon: skillEn.displayIcon,
                         jpName: skillJa?.displayName || skillEn.displayName,
                         jpCommon: localCallout?.jpCommon || '---',
-                        romajiCommon: localCallout?.romajiCommon || '---',
-                        desc: localCallout?.desc || skillJa?.description
+                        romajiCommon: localCallout?.romajiCommon || '---'
                       };
                     })
                     .sort((a, b) => {
                       const order = { 'Ability1': 1, 'Ability2': 2, 'Grenade': 3, 'Ultimate': 4 };
                       return (order[a.slot] || 9) - (order[b.slot] || 9);
-                    })
-                    .map((skill, idx) => ({
-                      ...skill,
-                      displayKey: ['C', 'Q', 'E', 'X'][idx] || '?'
-                    }));
+                    });
 
                   return {
                     id: agentEn.uuid,
@@ -783,15 +324,12 @@
                 setAgents(processedAgents);
                 setFilteredAgents(processedAgents);
                 setLoading(false);
-              } catch (err) {
-                console.error(err);
-                setLoading(false);
-              }
+              } catch (err) { console.error(err); setLoading(false); }
             };
-
             fetchAllData();
           }, []);
 
+          // 搜索与过滤
           useEffect(() => {
             const term = searchTerm.toLowerCase();
             let filtered = agents;
@@ -807,20 +345,13 @@
             setFilteredAgents(filtered);
           }, [searchTerm, selectedRole, agents]);
 
-          useEffect(() => {
-            if (selectedAgent) {
-              setActiveSkillIndex(0);
-              setIsEditing(false);
-            }
-          }, [selectedAgent]);
-
+          // 保存编辑 (Compat 写法)
           const handleSaveEdit = async (agentId, slot) => {
             if (!user) return;
             setIsSaving(true);
             const docId = `${agentId}_${slot}`;
             try {
-              // Use Strict Path: artifacts/{appId}/public/data/{collectionName}
-              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'agent_overrides', docId), {
+              await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('agent_overrides').doc(docId).set({
                 jp: editValue.jp,
                 romaji: editValue.romaji,
                 updatedAt: new Date().toISOString(),
@@ -828,9 +359,7 @@
               });
               setIsEditing(false);
             } catch (err) {
-              console.error("Failed to save:", err);
-              // Use non-blocking UI for error in real app, alert for simplicity here
-              // alert("Save failed, please try again."); 
+              console.error("Save failed:", err);
             } finally {
               setIsSaving(false);
             }
@@ -851,6 +380,10 @@
             setIsEditing(true);
           };
 
+          useEffect(() => {
+            if (selectedAgent) { setActiveSkillIndex(0); setIsEditing(false); }
+          }, [selectedAgent]);
+
           if (loading) {
             return (
               <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center text-white">
@@ -864,26 +397,18 @@
 
           if (!selectedAgent) {
             return (
-              <div className="min-h-screen dark:bg-[#121212] bg-[#e0e5ec] text-gray-900 dark:text-white selection:bg-[#ff4655]/30 transition-colors duration-300">
+              <div className="min-h-screen dark:bg-[#121212] bg-[#e0e5ec] text-gray-900 dark:text-white transition-colors duration-300">
                 <nav className="fixed top-0 w-full z-50 bg-white/70 dark:bg-[#121212]/60 backdrop-blur-xl border-b border-gray-200 dark:border-white/5 transition-all duration-300">
                   <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      {/* Image 2: Logo with Emboss and Blur */}
-                      <div className="p-1 bg-white/5 backdrop-blur-md rounded-full border border-white/10 dark:border-white/5 emboss-soft backdrop-blur-md">
-                        <span className="font-['PingFang_TC'] font-bold text-2xl tracking-[0.15em] text-black dark:text-white uppercase select-none pointer-events-none transition-colors px-2">
+                      <div className="p-1 bg-white/5 backdrop-blur-md rounded-full border border-white/10 dark:border-white/5 emboss-soft">
+                        <span className="font-['PingFang_TC'] font-bold text-2xl tracking-[0.15em] text-black dark:text-white uppercase select-none px-2">
                             VALO<span className="text-[#ff4655] mx-1">の</span>日本語
                         </span>
                       </div>
                     </div>
-                    {/* Theme Toggle: Scale Adjusted to 1.2x from Base (approx w-24, h-10) */}
-                    <button 
-                        onClick={() => setIsDark(!isDark)}
-                        className="relative w-24 h-10 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center p-1.5 transition-colors duration-300 shadow-inner"
-                    >
-                        <div 
-                            className={`absolute w-7 h-7 rounded-full bg-white shadow-md transform transition-transform duration-300 flex items-center justify-center
-                            ${isDark ? 'translate-x-14' : 'translate-x-0'}`}
-                        >
+                    <button onClick={() => setIsDark(!isDark)} className="relative w-24 h-10 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center p-1.5 shadow-inner transition-colors duration-300">
+                        <div className={`absolute w-7 h-7 rounded-full bg-white shadow-md flex items-center justify-center transform transition-transform duration-300 ${isDark ? 'translate-x-14' : 'translate-x-0'}`}>
                             {isDark ? <Moon size={16} className="text-gray-800" /> : <Sun size={16} className="text-orange-400" />}
                         </div>
                     </button>
@@ -891,34 +416,17 @@
                 </nav>
 
                 <div className="max-w-7xl mx-auto px-6 pt-32 pb-20">
-                    {/* Search Bar: Moved to top center, Width reduced to max-w-sm (half of original) */}
                     <div className="flex flex-col items-center justify-center mb-10 w-full animate-fade-up">
                         <div className="relative group w-full max-w-sm transition-all duration-500 hover:-translate-y-1 emboss-soft rounded-2xl dark:bg-[#121212] bg-[#f0f4f8]">
-                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 transition-colors z-10" size={20} />
-                            <input 
-                                type="text" 
-                                placeholder="搜尋特務..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full bg-transparent border-none rounded-2xl py-4 pl-14 pr-6 text-base text-gray-900 dark:text-white focus:outline-none transition-all duration-300 placeholder:text-gray-400 dark:placeholder:text-white/30 relative z-10 h-14"
-                            />
+                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 z-10" size={20} />
+                            <input type="text" placeholder="搜尋特務..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full bg-transparent border-none rounded-2xl py-4 pl-14 pr-6 text-base text-gray-900 dark:text-white focus:outline-none placeholder:text-gray-400 dark:placeholder:text-white/30 relative z-10 h-14" />
                         </div>
                     </div>
 
-                  {/* Role Filter Bar - Fixed Mobile Layout Overflow */}
                   <div className="mb-10 animate-fade-up mt-4 flex justify-center px-4" style={{ animationDelay: '0.1s' }}>
                     <div className="p-2 rounded-2xl md:rounded-full emboss-frame flex flex-wrap justify-center items-center gap-2 md:gap-3 w-full max-w-fit">
                         {AGENT_ROLES.map(role => (
-                        <button
-                            key={role}
-                            onClick={() => setSelectedRole(role)}
-                            className={`
-                            px-4 py-2 md:px-5 rounded-full text-sm md:text-base font-bold transition-all duration-300
-                            ${selectedRole === role 
-                                ? 'bg-white text-black shadow-sm scale-105 dark:bg-white dark:text-black dark:scale-100' // Dark mode: White bg, Black text (Same as light)
-                                : 'text-gray-500 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-white/10'}
-                            `}
-                        >
+                        <button key={role} onClick={() => setSelectedRole(role)} className={`px-4 py-2 md:px-5 rounded-full text-sm md:text-base font-bold transition-all duration-300 ${selectedRole === role ? 'bg-white text-black shadow-sm scale-105 dark:bg-white dark:text-black dark:scale-100' : 'text-gray-500 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-white/10'}`}>
                             {role}
                         </button>
                         ))}
@@ -927,26 +435,15 @@
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {filteredAgents.map((agent, index) => (
-                      <div 
-                        key={agent.id}
-                        onClick={() => setSelectedAgent(agent)}
-                        className="group relative h-[380px] rounded-[32px] overflow-hidden cursor-pointer dark:bg-[#121212] bg-[#f0f4f8] transition-all duration-500 hover:scale-[1.02] hover:-translate-y-2 animate-fade-up emboss-card"
-                        style={{ animationDelay: `${0.1 + index * 0.05}s` }}
-                      >
+                      <div key={agent.id} onClick={() => setSelectedAgent(agent)} className="group relative h-[380px] rounded-[32px] overflow-hidden cursor-pointer dark:bg-[#121212] bg-[#f0f4f8] transition-all duration-500 hover:scale-[1.02] hover:-translate-y-2 animate-fade-up emboss-card" style={{ animationDelay: `${0.1 + index * 0.05}s` }}>
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-[150%] animate-sheen pointer-events-none z-20 w-full h-full" />
-                        
                         <div className="absolute inset-0 flex items-center justify-center translate-y-8 group-hover:translate-y-4 group-hover:scale-105 transition-transform duration-700 ease-out">
                             <img src={agent.fullPortrait} alt={agent.name} className="h-[120%] object-cover drop-shadow-[0_20px_40px_rgba(0,0,0,0.4)] dark:drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)]" loading="lazy" />
                         </div>
-
                         <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-white/90 via-white/60 to-transparent dark:from-black dark:via-black/60 pt-24 z-10">
-                          {/* Image 2: Removed Role Label Badge */}
                           <div className="flex items-end justify-between relative">
                              <h3 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">{agent.name}</h3>
-                             {/* Image 5: Darker Japanese Name in Light Mode */}
-                             <span className="text-lg font-bold text-gray-500 dark:text-white/50 font-['PingFang_TC'] tracking-widest select-none uppercase">
-                                {agent.nameJa}
-                             </span>
+                             <span className="text-lg font-bold text-gray-500 dark:text-white/50 font-['PingFang_TC'] tracking-widest select-none uppercase">{agent.nameJa}</span>
                           </div>
                         </div>
                       </div>
@@ -961,7 +458,7 @@
           const displayValues = getDisplayValues(selectedAgent.id, activeSkill);
 
           return (
-            <div className="min-h-screen dark:bg-[#121212] bg-[#e0e5ec] text-gray-900 dark:text-white selection:bg-[#ff4655]/30 font-['PingFang_TC'] transition-colors duration-300">
+            <div className="min-h-screen dark:bg-[#121212] bg-[#e0e5ec] text-gray-900 dark:text-white font-['PingFang_TC'] transition-colors duration-300">
               <div className="fixed inset-0 z-0 pointer-events-none">
                  <div className="absolute top-[-20%] right-[-10%] w-[80vw] h-[80vw] rounded-full blur-[120px] opacity-20 transition-colors duration-1000 animate-blob" style={{ backgroundColor: selectedAgent.colors[0] }} />
                  <div className="absolute bottom-[-20%] left-[-10%] w-[60vw] h-[60vw] rounded-full blur-[100px] opacity-10 bg-zinc-800 animate-blob" style={{ animationDelay: '2s' }} />
@@ -969,7 +466,6 @@
 
               <nav className="fixed top-0 w-full z-50 bg-white/70 dark:bg-[#121212]/60 backdrop-blur-xl border-b border-gray-200 dark:border-white/5">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                  {/* Back Button: Removed text "All Agents", added emboss style */}
                   <button onClick={() => setSelectedAgent(null)} className="flex items-center justify-center emboss-btn rounded-full p-3 text-gray-500 dark:text-white/60 hover:text-black dark:hover:text-white transition-all active:scale-95">
                     <ArrowLeft size={20} />
                   </button>
@@ -996,7 +492,6 @@
                   <div key={activeSkill.nameEn} className="space-y-6 animate-scale-in">
                     <div className="space-y-2 text-center lg:text-left">
                       <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">{activeSkill.nameEn}</h2>
-                      {/* Removed Skill Description Text as requested */}
                     </div>
 
                     <div className="grid gap-4 mt-8">
