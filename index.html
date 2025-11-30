@@ -1,8 +1,13 @@
-<html lang="zh-Hant">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valoの日本語</title>
+    
+    <!-- Critical Polyfills for Older Browsers/WebViews (Must be loaded first) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.37.1/minified.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/regenerator-runtime/0.14.1/runtime.min.js"></script>
+    
     <!-- Tailwind CSS CDN with Configuration -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -20,7 +25,23 @@
     <!-- React & Babel CDNs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+    <!-- Babel with specific configuration for compatibility -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Configure Babel to NOT transform modules (fixes 'require is not defined') while keeping env preset -->
+    <script>
+        window.Babel = {
+            presets: [
+                ["env", {
+                    "targets": {
+                        "browsers": ["> 1%", "last 2 versions", "not ie <= 8"]
+                    },
+                    "modules": false // Crucial: Keep import/export syntax for browser
+                }],
+                "react"
+            ]
+        };
+    </script>
     
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js" type="module"></script>
