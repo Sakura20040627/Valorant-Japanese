@@ -1,4 +1,4 @@
-
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -238,7 +238,7 @@
         // Firebase Setup
         // ------------------------------------------------------------------
         const firebaseConfig = {
-          apiKey: "", // AIzaSyDjhgvA9DIDKQY1r4bYyTy0Z0G3PXRAohM - Using env default
+          apiKey: "AIzaSyDjhgvA9DIDKQY1r4bYyTy0Z0G3PXRAohM", // Restored key from user upload
           authDomain: "valorant-japanese.firebaseapp.com",
           projectId: "valorant-japanese",
           storageBucket: "valorant-japanese.firebasestorage.app",
@@ -247,11 +247,12 @@
           measurementId: "G-L7VBY0QLPE"
         };
         
-        // Use system provided config if available, otherwise fallback
+        // Use system provided config if available (Canvas env), otherwise fallback to hardcoded config (GitHub env)
         const app = initializeApp(typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // Fallback to a fixed string if __app_id is missing (GitHub env) to ensure data path consistency
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'valorant-jp-web';
 
         // ------------------------------------------------------------------
         // 圖標組件
