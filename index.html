@@ -1,5 +1,4 @@
 
-<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -85,8 +84,6 @@
         // ------------------------------------------------------------------
         // Firebase Setup (Encoded to bypass GitHub warning)
         // ------------------------------------------------------------------
-        // The config is Base64 encoded to prevent automated scanners from flagging it as a plain text secret.
-        // It decodes at runtime. This is safe for Firebase Client SDKs.
         const encodedConfig = "eyJhcGlLZXkiOiJBSXphU3lEamhndkE5RElES1FZMXI0Yll5VHkwWjBHM1BYUkFvaE0iLCJhdXRoRG9tYWluIjoidmFsb3JhbnQtamFwYW5lc2UuZmlyZWJhc2VhcHAuY29tIiwicHJvamVjdElkIjoidmFsb3JhbnQtamFwYW5lc2UiLCJzdG9yYWdlQnVja2V0IjoidmFsb3JhbnQtamFwYW5lc2UuZmlyZWJhc2VzdG9yYWdlLmFwcCIsIm1lc3NhZ2luZ1NlbmRlcklkIjoiNDg2NzA0MzI3MjEwIiwiYXBwSWQiOiIxOjQ4NjcwNDMyNzIxMDp3ZWI6MDVjYWFmODI0M2U4N2VmZmUwYjE1MyIsIm1lYXN1cmVtZW50SWQiOiJHLUw3VkJZMFFMUEUifQ==";
         
         let firebaseConfig;
@@ -157,31 +154,92 @@
           "Vyse": { nameCn: "薇絲", callouts: { "Razorvine": { jpCommon: "ヴァイン", romajiCommon: "Vain" }, "Shear": { jpCommon: "壁", romajiCommon: "Kabe" }, "Arc Rose": { jpCommon: "花", romajiCommon: "Hana" }, "Steel Garden": { jpCommon: "ウルト", romajiCommon: "Uruto" } } }
         };
 
+        // ------------------------------------------------------------------
+        // Audio Hook - Enhanced for Android WebView / Via Browser
+        // ------------------------------------------------------------------
         const useSpeech = () => {
-          const [voices, setVoices] = useState([]);
+          // Ref allows us to keep track of the current voices state without constant re-renders
+          const voicesRef = React.useRef([]);
+          
           useEffect(() => {
+            // Function to load voices
             const updateVoices = () => {
-                // Safeguard against missing API
-                if (window.speechSynthesis) setVoices(window.speechSynthesis.getVoices());
+                if (!window.speechSynthesis) return;
+                const vs = window.speechSynthesis.getVoices();
+                if (vs.length > 0) {
+                    voicesRef.current = vs;
+                }
             };
+
+            // Initial attempt
             updateVoices();
-            if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
+
+            // Retry mechanism for WebViews that load voices slowly
+            if (window.speechSynthesis) {
+                // Standard event listener
                 window.speechSynthesis.onvoiceschanged = updateVoices;
+                
+                // Aggressive polling for 3 seconds (helps on some Android versions)
+                const intervalId = setInterval(updateVoices, 500);
+                setTimeout(() => clearInterval(intervalId), 3000);
             }
           }, []);
 
           const speak = (text) => {
-            if (!window.speechSynthesis) return;
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'ja-JP';
-            utterance.rate = 0.9;
-            if (voices.length > 0) {
-                const jaVoice = voices.find(v => v.lang.indexOf('ja') !== -1 || v.lang.indexOf('JP') !== -1);
-                if (jaVoice) utterance.voice = jaVoice;
+            // Check API availability
+            if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+                console.warn("Speech Synthesis API not supported in this browser.");
+                return;
             }
+
+            // Always cancel before speaking to prevent queue deadlocks in Chrome/WebView
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            // Force language code. Android WebViews sometimes prefer underscore 'ja_JP' over 'ja-JP',
+            // but the standard is 'ja-JP'. We set it here, but also try to find a matching voice object.
+            utterance.lang = 'ja-JP';
+
+            // Attempt to find a specific Japanese voice
+            let voices = voicesRef.current;
+            // If ref is empty, try fetching again immediately
+            if (voices.length === 0) {
+                voices = window.speechSynthesis.getVoices();
+                voicesRef.current = voices;
+            }
+
+            if (voices.length > 0) {
+                // Priority 1: Exact match for 'ja-JP'
+                let jaVoice = voices.find(v => v.lang === 'ja-JP');
+                
+                // Priority 2: Match 'ja_JP' (Android system style)
+                if (!jaVoice) {
+                    jaVoice = voices.find(v => v.lang === 'ja_JP');
+                }
+                
+                // Priority 3: Loose match for any Japanese
+                if (!jaVoice) {
+                    jaVoice = voices.find(v => v.lang.indexOf('ja') !== -1);
+                }
+
+                // If a voice object is found, set it.
+                // CRITICAL FOR ANDROID: If NO voice object is found (e.g. system default only),
+                // do NOT set utterance.voice to null/undefined explicitly if you can avoid it,
+                // just rely on utterance.lang = 'ja-JP' which triggers the system default for that lang.
+                if (jaVoice) {
+                    utterance.voice = jaVoice;
+                }
+            }
+
+            // Error handling for playback
+            utterance.onerror = (e) => {
+                console.error("Speech Error:", e);
+            };
+
             window.speechSynthesis.speak(utterance);
           };
+          
           return { speak };
         };
 
@@ -199,6 +257,7 @@
           const [isEditing, setIsEditing] = useState(false);
           const [editValue, setEditValue] = useState({ jp: '', romaji: '' });
           const [isSaving, setIsSaving] = useState(false);
+          
           const { speak } = useSpeech();
 
           useEffect(() => {
@@ -258,7 +317,7 @@
                 if (dataEn.status !== 200 || dataJa.status !== 200) throw new Error("API Error");
 
                 const jaMap = new Map();
-                dataJa.data.forEach(a => jaMap.set(a.uuid, a)); // Manually loop for older JS engine safety
+                dataJa.data.forEach(a => jaMap.set(a.uuid, a)); 
 
                 const processedAgents = dataEn.data.map(agentEn => {
                   const agentJa = jaMap.get(agentEn.uuid);
@@ -268,7 +327,6 @@
                     .filter(skill => skill.slot !== 'Passive')
                     .map(skillEn => {
                       const skillJa = (agentJa && agentJa.abilities) ? agentJa.abilities.find(s => s.slot === skillEn.slot) : null;
-                      // Safe check for localCallout without optional chaining
                       let localCallout = null;
                       if (localData && localData.callouts) {
                           localCallout = localData.callouts[skillEn.displayName];
@@ -290,7 +348,6 @@
                       return ordA - ordB;
                     });
                     
-                  // Safe gradient color check
                   let c1 = '18181b', c2 = '000000';
                   if (agentEn.backgroundGradientColors && agentEn.backgroundGradientColors.length > 1) {
                       c1 = agentEn.backgroundGradientColors[0];
