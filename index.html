@@ -1,34 +1,47 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valoの日本語 - 特務技能報點</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Valoの日本語</title>
+    <!-- Tailwind CSS CDN with Configuration -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // 啟用手動切換深色模式
+            theme: {
+                extend: {
+                    colors: {
+                        // 自定義顏色擴展
+                    }
+                }
+            }
+        }
+    </script>
     <!-- React & Babel CDNs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js" type="module"></script>
+    
     <style>
-        /* 全局字体设置，确保 PingFang TC 优先 */
+        /* 全局字體設置，確保 PingFang TC 優先 */
         body {
             font-family: "PingFang TC", "PingFang SC", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-            background-color: black;
-            color: white;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
+            /* 移除硬編碼背景色，由 Tailwind 類控制 */
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         
-        /* 避免 Tailwind 的默认字体干扰 */
+        /* 避免 Tailwind 的默認字體干擾 */
         #root {
             font-family: inherit;
         }
 
         /* ------------------------------------------------------------------
-         * CSS 关键帧动画
+         * CSS 關鍵幀動畫
          * ------------------------------------------------------------------
          */
         :root {
@@ -80,30 +93,168 @@
             text-overflow: ellipsis;
         }
         
-        /* 自定义滚动条 */
+        /* 3D 浮雕陰影 (Neumorphism) - 自適應深淺模式 */
+        
+        /* 深色模式下的浮雕 */
+        .dark .emboss-soft {
+            box-shadow: 
+                5px 5px 10px rgba(0, 0, 0, 0.8), 
+                -2px -2px 5px rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            background-color: #121212;
+        }
+        
+        /* 淺色模式下的浮雕 */
+        .emboss-soft {
+            box-shadow: 
+                6px 6px 12px rgba(163, 177, 198, 0.4), 
+                -4px -4px 10px rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            background-color: #e0e5ec;
+        }
+
+        /* 凸起的外框浮雕 (用於特務分類) - 深色 */
+        .dark .emboss-frame {
+            box-shadow: 
+                5px 5px 10px rgba(0, 0, 0, 0.8), 
+                -2px -2px 5px rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            background-color: #121212;
+        }
+
+        /* 凸起的外框浮雕 (用於特務分類) - 淺色 */
+        .emboss-frame {
+            box-shadow: 
+                5px 5px 10px rgba(163, 177, 198, 0.4), 
+                -5px -5px 10px rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background-color: #e0e5ec;
+        }
+
+        /* 卡片浮雕 - 深色 */
+        .dark .emboss-card {
+            box-shadow: 
+                8px 8px 15px rgba(0, 0, 0, 0.9), 
+                -2px -2px 5px rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            border-left: 1px solid rgba(255,255,255,0.05);
+            background-color: #121212;
+        }
+
+        /* 卡片浮雕 - 淺色 */
+        .emboss-card {
+            box-shadow: 
+                9px 9px 16px rgba(163, 177, 198, 0.5), 
+                -9px -9px 16px rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-color: #e0e5ec;
+        }
+
+        /* 按鈕按下/激活狀態 - 深色 */
+        .dark .emboss-pressed {
+            box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.8), inset -1px -1px 2px rgba(255, 255, 255, 0.08);
+            background-color: #121212;
+            color: #ff4655;
+        }
+
+        /* 按鈕按下/激活狀態 - 淺色 */
+        .emboss-pressed {
+            box-shadow: inset 3px 3px 6px rgba(163, 177, 198, 0.6), inset -3px -3px 6px rgba(255, 255, 255, 0.8);
+            background-color: #e0e5ec;
+            color: #ff4655;
+        }
+
+        /* 小按鈕浮雕 (用於返回按鈕) - 淺色 */
+        .emboss-btn {
+            box-shadow: 
+                3px 3px 6px rgba(163, 177, 198, 0.4), 
+                -2px -2px 5px rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            background-color: #e0e5ec;
+        }
+        /* 小按鈕浮雕 - 深色 */
+        .dark .emboss-btn {
+             box-shadow: 
+                4px 4px 8px rgba(0, 0, 0, 0.8), 
+                -1px -1px 3px rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            background-color: #121212;
+        }
+        .dark .emboss-btn:active {
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.8), inset -1px -1px 2px rgba(255, 255, 255, 0.08);
+        }
+        .emboss-btn:active {
+            box-shadow: inset 2px 2px 5px rgba(163, 177, 198, 0.6), inset -2px -2px 5px rgba(255, 255, 255, 0.8);
+        }
+        
+        /* 液體玻璃流光效果 (僅用於搜索框) */
+        @keyframes liquid-glow {
+            0% { box-shadow: 0 0 10px rgba(255,255,255,0.05), inset 0 0 0 rgba(255,255,255,0.05); }
+            50% { box-shadow: 0 0 20px rgba(255,255,255,0.15), inset 0 0 10px rgba(255,255,255,0.1); }
+            100% { box-shadow: 0 0 10px rgba(255,255,255,0.05), inset 0 0 0 rgba(255,255,255,0.05); }
+        }
+
+        .dark .animate-liquid:hover, .dark .animate-liquid:focus-within {
+            animation: liquid-glow 3s infinite ease-in-out;
+        }
+        
+        /* 自定義滾動條 */
         ::-webkit-scrollbar {
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #18181b; 
+            background: transparent; 
         }
         ::-webkit-scrollbar-thumb {
-            background: #3f3f46; 
+            background: #71717a; 
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #52525b; 
+            background: #a1a1aa; 
+        }
+
+        /* Saving Indicator Animation */
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+        }
+        .saving-pulse {
+            animation: pulse-green 2s infinite;
         }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
-    <script type="text/babel">
+    <script type="text/babel" data-type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
         const { useState, useEffect, useMemo } = React;
 
         // ------------------------------------------------------------------
-        // 图标组件 (替换原有的 Lucide CDN 引用，确保 React 组件可用)
+        // Firebase Setup
+        // ------------------------------------------------------------------
+        const firebaseConfig = {
+          apiKey: "", // AIzaSyDjhgvA9DIDKQY1r4bYyTy0Z0G3PXRAohM - Using env default
+          authDomain: "valorant-japanese.firebaseapp.com",
+          projectId: "valorant-japanese",
+          storageBucket: "valorant-japanese.firebasestorage.app",
+          messagingSenderId: "486704327210",
+          appId: "1:486704327210:web:05caaf8243e87effe0b153",
+          measurementId: "G-L7VBY0QLPE"
+        };
+        
+        // Use system provided config if available, otherwise fallback
+        const app = initializeApp(typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // ------------------------------------------------------------------
+        // 圖標組件
         // ------------------------------------------------------------------
         const IconBase = ({ children, size = 24, className = "" }) => (
             <svg 
@@ -150,14 +301,40 @@
             </IconBase>
         );
 
-        const Sparkles = (props) => (
+        const Save = (props) => (
             <IconBase {...props}>
-                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 3Z" />
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                <polyline points="17 21 17 13 7 13 7 21" />
+                <polyline points="7 3 7 8 15 8" />
+            </IconBase>
+        );
+
+        const Cloud = (props) => (
+             <IconBase {...props}>
+                <path d="M17.5 19c0-3.037-2.463-5.5-5.5-5.5S6.5 15.963 6.5 19" />
+                <path d="M20.39 15.429A5 5 0 0 0 16.5 7c-3.063 0-5.636 2.054-6.328 5.035" />
+                <path d="M11 12.035a3 3 0 1 0-3.992 4.414" />
+             </IconBase>
+        );
+        
+        const Sun = (props) => (
+            <IconBase {...props}>
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2" /><path d="M12 20v2" />
+                <path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" />
+                <path d="M2 12h2" /><path d="M20 12h2" />
+                <path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" />
+            </IconBase>
+        );
+
+        const Moon = (props) => (
+            <IconBase {...props}>
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
             </IconBase>
         );
 
         // ------------------------------------------------------------------
-        // 数据配置区
+        // 數據配置區
         // ------------------------------------------------------------------
         const POPULARITY_RANK = [
           "Jett", "Reyna", "Clove", "Omen", "Sova", "Gekko", "Sage", "Iso", 
@@ -168,7 +345,6 @@
 
         const AGENT_ROLES = ["All", "Duelist", "Controller", "Initiator", "Sentinel"];
 
-        // 繁體中文譯名和日文常用報點 (Traditional Chinese Names & Japanese Callouts)
         const AGENT_LOCAL_DATA = {
           "Jett": {
             nameCn: "婕提",
@@ -228,7 +404,7 @@
             nameCn: "依索",
             callouts: {
               "Contingency": { jpCommon: "壁", romajiCommon: "Kabe", desc: "防彈牆。" },
-              "Undercut": { jpCommon: "弱体化", romajiCommon: "Jakutaika", desc: "易傷。" },
+              "Undercut": { jpCommon: "弱体化", romajiCommon: "Jakutaika", desc: "易伤。" },
               "Double Tap": { jpCommon: "シールド", romajiCommon: "Shiirudo", desc: "護盾。" },
               "Kill Contract": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "領域展開。" }
             }
@@ -291,7 +467,7 @@
             nameCn: "蘇法",
             callouts: {
               "Owl Drone": { jpCommon: "ドローン", romajiCommon: "Doroon", desc: "無人機。" },
-              "Shock Bolt": { jpCommon: "ショック", romajiCommon: "Shokku", desc: "震盪箭。" },
+              "Shock Bolt": { jpCommon: "ショック", romajiCommon: "震盪箭。" },
               "Recon Bolt": { jpCommon: "リコン", romajiCommon: "Rikon", desc: "探測箭。" },
               "Hunter's Fury": { jpCommon: "ウルト", romajiCommon: "Uruto", desc: "大招。" }
             }
@@ -397,7 +573,7 @@
           }
         };
 
-        // 语音合成 Hook
+        // 語音合成 Hook - Reverted to speechSynthesis for reliability (Google TTS links are blocked)
         const useSpeech = () => {
           const speak = (text) => {
             if (!window.speechSynthesis) return;
@@ -411,6 +587,7 @@
         };
 
         function App() {
+          const [user, setUser] = useState(null);
           const [agents, setAgents] = useState([]);
           const [filteredAgents, setFilteredAgents] = useState([]);
           const [selectedAgent, setSelectedAgent] = useState(null);
@@ -418,13 +595,71 @@
           const [loading, setLoading] = useState(true);
           const [searchTerm, setSearchTerm] = useState('');
           const [selectedRole, setSelectedRole] = useState("All");
+          const [isDark, setIsDark] = useState(false); // Default to light mode (false)
           
-          const [userOverrides, setUserOverrides] = useState({});
+          const [globalOverrides, setGlobalOverrides] = useState({});
           const [isEditing, setIsEditing] = useState(false);
           const [editValue, setEditValue] = useState({ jp: '', romaji: '' });
+          const [isSaving, setIsSaving] = useState(false);
 
           const { speak } = useSpeech();
 
+          // 切換深色模式
+          useEffect(() => {
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                document.body.style.backgroundColor = '#0a0a0a';
+                document.body.style.color = 'white';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.body.style.backgroundColor = '#e0e5ec'; // Light mode background
+                document.body.style.color = '#1f2937';
+            }
+          }, [isDark]);
+
+          // 1. 初始化 Auth
+          useEffect(() => {
+            const initAuth = async () => {
+              try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                  await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                   // Fallback to anonymous if no token provided (development mode)
+                   await signInAnonymously(auth);
+                }
+              } catch (e) {
+                console.log("Auth fallback to anonymous due to error:", e);
+                try {
+                    await signInAnonymously(auth);
+                } catch (anonError) {
+                    console.error("Anonymous auth failed:", anonError);
+                }
+              }
+            };
+            initAuth();
+            const unsubscribe = onAuthStateChanged(auth, setUser);
+            return () => unsubscribe();
+          }, []);
+
+          // 2. 監聽 Firestore 數據
+          useEffect(() => {
+            if (!user) return;
+            // Use Strict Path: artifacts/{appId}/public/data/{collectionName}
+            const overridesRef = collection(db, 'artifacts', appId, 'public', 'data', 'agent_overrides');
+            const unsubscribe = onSnapshot(overridesRef, 
+              (snapshot) => {
+                const overrides = {};
+                snapshot.forEach(doc => {
+                  overrides[doc.id] = doc.data();
+                });
+                setGlobalOverrides(overrides);
+              },
+              (error) => console.error("Error fetching overrides:", error)
+            );
+            return () => unsubscribe();
+          }, [user]);
+
+          // 3. 獲取特務數據 (Valorant API)
           useEffect(() => {
             const fetchAllData = async () => {
               try {
@@ -473,6 +708,7 @@
                   return {
                     id: agentEn.uuid,
                     name: agentEn.displayName,
+                    nameJa: agentJa?.displayName || agentEn.displayName, 
                     nameCn: localData.nameCn,
                     role: agentEn.role?.displayName || 'Agent',
                     fullPortrait: agentEn.fullPortrait,
@@ -506,18 +742,15 @@
           useEffect(() => {
             const term = searchTerm.toLowerCase();
             let filtered = agents;
-            
             if (selectedRole !== "All") {
               filtered = filtered.filter(agent => agent.role === selectedRole);
             }
-            
             if (term !== '') {
                 filtered = filtered.filter(agent => 
                   agent.name.toLowerCase().includes(term) || 
                   (agent.nameCn && agent.nameCn.toLowerCase().includes(term))
                 );
             }
-            
             setFilteredAgents(filtered);
           }, [searchTerm, selectedRole, agents]);
 
@@ -528,19 +761,32 @@
             }
           }, [selectedAgent]);
 
-          const handleSaveEdit = (agentId, slot) => {
-            const key = `${agentId}_${slot}`;
-            setUserOverrides(prev => ({
-              ...prev,
-              [key]: { jp: editValue.jp, romaji: editValue.romaji }
-            }));
-            setIsEditing(false);
+          const handleSaveEdit = async (agentId, slot) => {
+            if (!user) return;
+            setIsSaving(true);
+            const docId = `${agentId}_${slot}`;
+            try {
+              // Use Strict Path: artifacts/{appId}/public/data/{collectionName}
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'agent_overrides', docId), {
+                jp: editValue.jp,
+                romaji: editValue.romaji,
+                updatedAt: new Date().toISOString(),
+                updatedBy: user.uid
+              });
+              setIsEditing(false);
+            } catch (err) {
+              console.error("Failed to save:", err);
+              // Use non-blocking UI for error in real app, alert for simplicity here
+              // alert("Save failed, please try again."); 
+            } finally {
+              setIsSaving(false);
+            }
           };
 
           const getDisplayValues = (agentId, skill) => {
             if (!skill) return { jp: '---', romaji: '---' };
-            const key = `${agentId}_${skill.slot}`;
-            const override = userOverrides[key];
+            const docId = `${agentId}_${skill.slot}`;
+            const override = globalOverrides[docId];
             return {
               jp: override ? override.jp : skill.jpCommon,
               romaji: override ? override.romaji : skill.romajiCommon
@@ -554,7 +800,7 @@
 
           if (loading) {
             return (
-              <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white">
+              <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center text-white">
                 <div className="animate-pulse flex flex-col items-center">
                   <div className="w-12 h-12 rounded-full border-2 border-white/20 border-t-[#ff4655] animate-spin mb-6"></div>
                   <p className="text-white/40 text-sm font-medium tracking-wide">Loading Agents...</p>
@@ -565,110 +811,89 @@
 
           if (!selectedAgent) {
             return (
-              <div className="min-h-screen bg-black text-white selection:bg-[#ff4655]/30">
-                
-                {/* Navbar */}
-                <nav className="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
+              <div className="min-h-screen dark:bg-[#121212] bg-[#e0e5ec] text-gray-900 dark:text-white selection:bg-[#ff4655]/30 transition-colors duration-300">
+                <nav className="fixed top-0 w-full z-50 bg-white/70 dark:bg-[#121212]/60 backdrop-blur-xl border-b border-gray-200 dark:border-white/5 transition-all duration-300">
                   <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      {/* Logo Container - V Symbol (Black/White) */}
-                      <div className="relative h-9 w-9 rounded-[10px] bg-white/5 flex items-center justify-center overflow-hidden border border-white/10 shadow-[inset_0_1px_3px_rgba(255,255,255,0.1)] group hover:bg-white/10 transition-colors">
-                        {/* Internal Highlight/Sheen */}
-                        <div className="absolute top-0 w-full h-[40%] bg-gradient-to-b from-white/20 to-transparent pointer-events-none transition-all duration-500 group-hover:from-white/30"></div>
-                        {/* Official Black and White V Logo */}
-                        <svg viewBox="0 0 100 100" className="w-5 h-5 fill-white drop-shadow-md z-10">
-                           <path d="M99.25 48.66V10.28L85.1 4.18L50.48 83.05L15.26 4.6L1.13 10.68L42.54 95.82H59.25L99.25 48.66Z" />
-                        </svg>
+                      {/* Image 2: Logo with Emboss and Blur */}
+                      <div className="p-1 bg-white/5 backdrop-blur-md rounded-full border border-white/10 dark:border-white/5 emboss-soft backdrop-blur-md">
+                        <span className="font-['PingFang_TC'] font-bold text-2xl tracking-[0.15em] text-black dark:text-white uppercase select-none pointer-events-none transition-colors px-2">
+                            VALO<span className="text-[#ff4655] mx-1">の</span>日本語
+                        </span>
                       </div>
-                      <span className="font-semibold text-xl tracking-tight text-white/90 font-['PingFang_TC'] hidden sm:block">Valo<span className="text-[#ff4655]">の</span>日本語</span>
                     </div>
-                    
+                    {/* Theme Toggle: Scale Adjusted to 1.2x from Base (approx w-24, h-10) */}
+                    <button 
+                        onClick={() => setIsDark(!isDark)}
+                        className="relative w-24 h-10 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center p-1.5 transition-colors duration-300 shadow-inner"
+                    >
+                        <div 
+                            className={`absolute w-7 h-7 rounded-full bg-white shadow-md transform transition-transform duration-300 flex items-center justify-center
+                            ${isDark ? 'translate-x-14' : 'translate-x-0'}`}
+                        >
+                            {isDark ? <Moon size={16} className="text-gray-800" /> : <Sun size={16} className="text-orange-400" />}
+                        </div>
+                    </button>
                   </div>
                 </nav>
 
-                {/* Content */}
                 <div className="max-w-7xl mx-auto px-6 pt-32 pb-20">
-                  
-                  {/* Header Section: Title + Search Bar Grid Layout */}
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12 animate-fade-up items-end" style={{ animationDelay: '0s' }}>
-                    
-                    {/* Title Section */}
-                    <div className="col-span-1 flex flex-col gap-2">
-                      <h1 className="text-6xl font-bold tracking-tight bg-gradient-to-br from-white to-white/50 bg-clip-text text-transparent font-['PingFang_TC'] leading-tight">
-                        特務
-                      </h1>
-                      <p className="text-white/40 text-lg font-medium">Master the Japanese callouts.</p>
+                    {/* Search Bar: Moved to top center, Width reduced to max-w-sm (half of original) */}
+                    <div className="flex flex-col items-center justify-center mb-10 w-full animate-fade-up">
+                        <div className="relative group w-full max-w-sm transition-all duration-500 hover:-translate-y-1 emboss-soft rounded-2xl dark:bg-[#121212] bg-[#f0f4f8]">
+                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 transition-colors z-10" size={20} />
+                            <input 
+                                type="text" 
+                                placeholder="搜尋特務..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full bg-transparent border-none rounded-2xl py-4 pl-14 pr-6 text-base text-gray-900 dark:text-white focus:outline-none transition-all duration-300 placeholder:text-gray-400 dark:placeholder:text-white/30 relative z-10 h-14"
+                            />
+                        </div>
                     </div>
 
-                    {/* Search Bar */}
-                    <div className="col-span-1 md:col-span-2 md:col-start-2 w-full">
-                       <div className="relative group w-full">
-                          <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-white/10 rounded-2xl blur-md transition-all duration-500 opacity-0 group-focus-within:opacity-100 group-hover:opacity-50"></div>
-                          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-white transition-colors z-10" size={20} />
-                          <input 
-                            type="text" 
-                            placeholder="搜尋特務..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-14 pr-6 text-base text-white focus:outline-none focus:bg-white/10 focus:border-white/20 transition-all duration-300 placeholder:text-white/20 relative z-0 h-14"
-                          />
-                       </div>
+                  {/* Role Filter Bar - Added Emboss Style & External Frame (Image 3) */}
+                  <div className="mb-10 animate-fade-up mt-4 flex justify-center" style={{ animationDelay: '0.1s' }}>
+                    <div className="p-2 rounded-full emboss-frame flex items-center gap-3 w-fit flex-wrap scale-100">
+                        {AGENT_ROLES.map(role => (
+                        <button
+                            key={role}
+                            onClick={() => setSelectedRole(role)}
+                            className={`
+                            px-5 py-2 rounded-full text-base font-bold transition-all duration-300
+                            ${selectedRole === role 
+                                ? 'bg-white text-black shadow-sm scale-105 dark:bg-white dark:text-black dark:scale-100' // Dark mode: White bg, Black text (Same as light)
+                                : 'text-gray-500 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-white/10'}
+                            `}
+                        >
+                            {role}
+                        </button>
+                        ))}
                     </div>
-
                   </div>
 
-                  {/* Role Filter Bar */}
-                  <div className="mb-10 p-1.5 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full flex items-center gap-1 w-fit animate-fade-up flex-wrap" style={{ animationDelay: '0.1s' }}>
-                     {AGENT_ROLES.map(role => (
-                       <button
-                         key={role}
-                         onClick={() => setSelectedRole(role)}
-                         className={`
-                           px-5 py-2 rounded-full text-sm font-medium transition-all duration-300
-                           ${selectedRole === role 
-                             ? 'bg-white text-black shadow-lg shadow-white/10 scale-105' 
-                             : 'text-white/60 hover:text-white hover:bg-white/5'}
-                         `}
-                       >
-                         {role}
-                       </button>
-                     ))}
-                  </div>
-
-                  {/* Grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {filteredAgents.map((agent, index) => (
                       <div 
                         key={agent.id}
                         onClick={() => setSelectedAgent(agent)}
-                        className="group relative h-[380px] rounded-[32px] overflow-hidden cursor-pointer bg-white/5 backdrop-blur-3xl border border-white/5 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-[#ff4655]/10 animate-fade-up"
+                        className="group relative h-[380px] rounded-[32px] overflow-hidden cursor-pointer dark:bg-[#121212] bg-[#f0f4f8] transition-all duration-500 hover:scale-[1.02] hover:-translate-y-2 animate-fade-up emboss-card"
                         style={{ animationDelay: `${0.1 + index * 0.05}s` }}
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-[150%] animate-sheen pointer-events-none z-20 w-full h-full" />
-
-                        <div 
-                          className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-700"
-                          style={{ background: `linear-gradient(to bottom right, ${agent.colors[0]}, transparent)` }}
-                        />
                         
                         <div className="absolute inset-0 flex items-center justify-center translate-y-8 group-hover:translate-y-4 group-hover:scale-105 transition-transform duration-700 ease-out">
-                            <img 
-                                src={agent.fullPortrait} 
-                                alt={agent.name}
-                                className="h-[120%] object-cover drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)]"
-                                loading="lazy"
-                            />
+                            <img src={agent.fullPortrait} alt={agent.name} className="h-[120%] object-cover drop-shadow-[0_20px_40px_rgba(0,0,0,0.4)] dark:drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)]" loading="lazy" />
                         </div>
 
-                        <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black via-black/60 to-transparent pt-24 z-10">
-                          <div className="flex items-center gap-2 mb-1 opacity-80 group-hover:opacity-100 transition-opacity transform group-hover:-translate-y-1 duration-300">
-                            <span className="px-3 py-1 bg-white/10 backdrop-blur-md text-[10px] font-semibold uppercase text-white/90 rounded-full border border-white/10 shadow-sm">
-                              {agent.role}
-                            </span>
-                          </div>
-                          <div className="flex items-baseline justify-between">
-                             <h3 className="text-3xl font-bold text-white tracking-tight">{agent.name}</h3>
-                             {/* 中文名已在此处移除 */}
+                        <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-white/90 via-white/60 to-transparent dark:from-black dark:via-black/60 pt-24 z-10">
+                          {/* Image 2: Removed Role Label Badge */}
+                          <div className="flex items-end justify-between relative">
+                             <h3 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">{agent.name}</h3>
+                             {/* Image 5: Darker Japanese Name in Light Mode */}
+                             <span className="text-lg font-bold text-gray-500 dark:text-white/50 font-['PingFang_TC'] tracking-widest select-none uppercase">
+                                {agent.nameJa}
+                             </span>
                           </div>
                         </div>
                       </div>
@@ -679,116 +904,74 @@
             );
           }
 
-          // Detail View
           const activeSkill = selectedAgent.skills[activeSkillIndex];
           const displayValues = getDisplayValues(selectedAgent.id, activeSkill);
 
           return (
-            <div className="min-h-screen bg-black text-white selection:bg-[#ff4655]/30 overflow-hidden font-['PingFang_TC']">
-              
+            <div className="min-h-screen dark:bg-[#121212] bg-[#e0e5ec] text-gray-900 dark:text-white selection:bg-[#ff4655]/30 font-['PingFang_TC'] transition-colors duration-300">
               <div className="fixed inset-0 z-0 pointer-events-none">
-                 <div 
-                    className="absolute top-[-20%] right-[-10%] w-[80vw] h-[80vw] rounded-full blur-[120px] opacity-20 transition-colors duration-1000 animate-blob"
-                    style={{ backgroundColor: selectedAgent.colors[0] }}
-                 />
+                 <div className="absolute top-[-20%] right-[-10%] w-[80vw] h-[80vw] rounded-full blur-[120px] opacity-20 transition-colors duration-1000 animate-blob" style={{ backgroundColor: selectedAgent.colors[0] }} />
                  <div className="absolute bottom-[-20%] left-[-10%] w-[60vw] h-[60vw] rounded-full blur-[100px] opacity-10 bg-zinc-800 animate-blob" style={{ animationDelay: '2s' }} />
               </div>
 
-              <nav className="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-xl border-b border-white/5">
+              <nav className="fixed top-0 w-full z-50 bg-white/70 dark:bg-[#121212]/60 backdrop-blur-xl border-b border-gray-200 dark:border-white/5">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                  <button 
-                    onClick={() => setSelectedAgent(null)}
-                    className="flex items-center gap-2 text-white/60 hover:text-white transition-colors rounded-full px-3 py-1.5 hover:bg-white/5"
-                  >
-                    <ArrowLeft size={18} />
-                    <span className="text-sm font-medium">All Agents</span>
+                  {/* Back Button: Removed text "All Agents", added emboss style */}
+                  <button onClick={() => setSelectedAgent(null)} className="flex items-center justify-center emboss-btn rounded-full p-3 text-gray-500 dark:text-white/60 hover:text-black dark:hover:text-white transition-all active:scale-95">
+                    <ArrowLeft size={20} />
                   </button>
-                  <div className="font-semibold text-white/90">
-                    {selectedAgent.name}
-                  </div>
+                  <div className="font-semibold text-gray-900 dark:text-white/90">{selectedAgent.name}</div>
                 </div>
               </nav>
 
-              <div className="relative z-10 pt-24 pb-12 max-w-7xl mx-auto px-6 h-screen flex flex-col lg:flex-row gap-12 items-center lg:items-start">
-                
+              <div className="relative z-10 pt-24 pb-12 max-w-7xl mx-auto px-6 min-h-screen flex flex-col lg:flex-row gap-12 items-center lg:items-start">
                 <div className="relative w-full lg:w-1/2 h-[40vh] lg:h-[80vh] flex items-center justify-center animate-fade-up">
-                   <img 
-                     src={selectedAgent.fullPortrait} 
-                     alt={selectedAgent.name}
-                     className="h-full w-auto object-contain drop-shadow-[0_0_60px_rgba(255,255,255,0.1)]"
-                   />
-                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[20vw] font-bold text-white/5 -z-10 select-none">
-                     {selectedAgent.name[0]}
-                   </div>
+                   <img src={selectedAgent.fullPortrait} alt={selectedAgent.name} className="h-full w-auto object-contain drop-shadow-[0_0_60px_rgba(0,0,0,0.1)] dark:drop-shadow-[0_0_60px_rgba(255,255,255,0.1)]" />
+                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[20vw] font-bold text-black/5 dark:text-white/5 -z-10 select-none">{selectedAgent.name[0]}</div>
                 </div>
 
                 <div className="w-full lg:w-1/2 flex flex-col gap-8 max-w-xl animate-fade-up" style={{ animationDelay: '0.1s' }}>
-                  
-                  <div className="flex gap-4 p-2 bg-white/5 backdrop-blur-xl rounded-[24px] border border-white/10 w-fit mx-auto lg:mx-0 shadow-2xl">
+                  <div className="flex gap-4 p-2 bg-white/40 dark:bg-white/5 backdrop-blur-xl rounded-[24px] border border-white/50 dark:border-white/10 w-fit mx-auto lg:mx-0 shadow-2xl">
                     {selectedAgent.skills.map((skill, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setActiveSkillIndex(index)}
-                        className={`
-                          relative w-16 h-16 rounded-[18px] flex items-center justify-center transition-all duration-300
-                          ${index === activeSkillIndex 
-                            ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.3)] scale-105' 
-                            : 'text-white/40 hover:text-white hover:bg-white/10'}
-                        `}
-                      >
-                        <img 
-                          src={skill.icon} 
-                          alt={skill.nameEn} 
-                          className={`w-8 h-8 object-contain transition-transform duration-300 ${index === activeSkillIndex ? 'brightness-0 scale-110' : 'invert brightness-200'}`}
-                        />
-                        {index === activeSkillIndex && (
-                            <span className="absolute -bottom-2 w-1 h-1 bg-white rounded-full opacity-50"></span>
-                        )}
+                      <button key={index} onClick={() => setActiveSkillIndex(index)} className={`relative w-16 h-16 rounded-[18px] flex items-center justify-center transition-all duration-300 ${index === activeSkillIndex ? 'bg-black dark:bg-white text-white dark:text-black shadow-[0_0_20px_rgba(0,0,0,0.2)] dark:shadow-[0_0_20px_rgba(255,255,255,0.3)] scale-105' : 'text-gray-400 dark:text-white/40 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10'}`}>
+                        <img src={skill.icon} alt={skill.nameEn} className={`w-8 h-8 object-contain transition-transform duration-300 ${index === activeSkillIndex ? 'brightness-100 dark:brightness-0 scale-110' : 'brightness-0 dark:invert dark:brightness-200'}`} />
+                        {index === activeSkillIndex && (<span className="absolute -bottom-2 w-1 h-1 bg-black dark:bg-white rounded-full opacity-50"></span>)}
                       </button>
                     ))}
                   </div>
 
                   <div key={activeSkill.nameEn} className="space-y-6 animate-scale-in">
                     <div className="space-y-2 text-center lg:text-left">
-                      <h2 className="text-4xl font-bold tracking-tight text-white">{activeSkill.nameEn}</h2>
-                      <p className="text-lg text-white/50 font-medium leading-relaxed font-['PingFang_TC']">{activeSkill.desc}</p>
+                      <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">{activeSkill.nameEn}</h2>
+                      {/* Skill Desc: Removed explicit font, ensuring inheritance and comfort */}
+                      <p className="text-lg text-gray-500 dark:text-white/60 font-medium leading-relaxed">{activeSkill.desc}</p>
                     </div>
 
                     <div className="grid gap-4 mt-8">
-                      
-                      <div className="group relative overflow-hidden rounded-[24px] bg-white/5 backdrop-blur-xl border border-white/10 p-6 transition-all hover:bg-white/10 shadow-lg">
+                      <div className="group relative overflow-hidden rounded-[24px] bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/50 dark:border-white/10 p-6 transition-all hover:bg-white/80 dark:hover:bg-white/10 shadow-lg">
                          <div className="flex justify-between items-center">
                             <div>
-                               <p className="text-xs font-semibold uppercase tracking-wider text-white/30 mb-1">Official Name</p>
+                               <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/30 mb-1">Official Name</p>
                                <div className="flex flex-col">
-                                  <p className="text-2xl font-bold text-white font-['PingFang_TC'] jp-name-truncate" title={activeSkill.jpName}>{activeSkill.jpName}</p>
+                                  <p className="text-2xl font-bold text-gray-900 dark:text-white font-['PingFang_TC'] jp-name-truncate" title={activeSkill.jpName}>{activeSkill.jpName}</p>
                                </div>
                             </div>
-                            <button 
-                              onClick={() => speak(activeSkill.jpName)}
-                              className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:bg-white hover:text-black hover:scale-110 active:scale-95 transition-all cursor-pointer"
-                            >
+                            <button onClick={() => speak(activeSkill.jpName)} className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-gray-600 dark:text-white/80 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black hover:scale-110 active:scale-95 transition-all cursor-pointer">
                               <Volume2 size={22} />
                             </button>
                          </div>
                       </div>
 
-                      <div className="group relative overflow-hidden rounded-[24px] bg-white/10 backdrop-blur-xl border border-white/20 p-6 transition-all hover:border-[#ff4655]/40 hover:shadow-[0_0_30px_rgba(255,70,85,0.15)] shadow-xl">
+                      <div className="group relative overflow-hidden rounded-[24px] bg-white/40 dark:bg-white/10 backdrop-blur-xl border border-white/50 dark:border-white/20 p-6 transition-all hover:border-[#ff4655]/40 hover:shadow-[0_0_30px_rgba(255,70,85,0.15)] shadow-xl">
                          <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#ff4655]/10 rounded-full blur-3xl group-hover:bg-[#ff4655]/20 transition-colors duration-500" />
-
                          <div className="relative z-10">
                             <div className="flex justify-between items-start mb-3">
-                               <div className="flex items-center gap-2">
-                                  <Sparkles size={14} className="text-[#ff4655]" />
-                                  <p className="text-xs font-semibold uppercase tracking-wider text-[#ff4655]/90">Common Name (常用名稱)</p>
+                               <div className="flex items-center">
+                                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/30">Common Name</p>
                                </div>
-                               
                                {!isEditing && (
-                                 <button 
-                                   onClick={() => startEditing(displayValues.jp, displayValues.romaji)}
-                                   className="text-white/20 hover:text-white transition-colors p-1"
-                                 >
-                                   <Edit2 size={14} />
+                                 <button onClick={() => startEditing(displayValues.jp, displayValues.romaji)} className="text-gray-400 dark:text-white/20 hover:text-black dark:hover:text-white transition-colors p-2">
+                                   <Edit2 size={16} />
                                  </button>
                                )}
                             </div>
@@ -796,70 +979,41 @@
                             {isEditing ? (
                               <div className="space-y-4 mt-2 animate-fade-up">
                                 <div>
-                                  <label className="text-[10px] text-white/40 uppercase font-bold block mb-1">Japanese</label>
-                                  <input 
-                                    type="text" 
-                                    value={editValue.jp}
-                                    onChange={(e) => setEditValue({...editValue, jp: e.target.value})}
-                                    className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#ff4655]/50 transition-colors font-bold text-lg"
-                                  />
+                                  <label className="text-[10px] text-gray-400 dark:text-white/40 uppercase font-bold block mb-1">Japanese</label>
+                                  <input type="text" value={editValue.jp} onChange={(e) => setEditValue({...editValue, jp: e.target.value})} className="w-full bg-black/5 dark:bg-black/30 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-[#ff4655]/50 transition-colors font-bold text-lg" />
                                 </div>
                                 <div>
-                                  <label className="text-[10px] text-white/40 uppercase font-bold block mb-1">Romaji</label>
-                                  <input 
-                                    type="text" 
-                                    value={editValue.romaji}
-                                    onChange={(e) => setEditValue({...editValue, romaji: e.target.value})}
-                                    className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-[#ff4655]/50 transition-colors"
-                                  />
+                                  <label className="text-[10px] text-gray-400 dark:text-white/40 uppercase font-bold block mb-1">Romaji</label>
+                                  <input type="text" value={editValue.romaji} onChange={(e) => setEditValue({...editValue, romaji: e.target.value})} className="w-full bg-black/5 dark:bg-black/30 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white font-mono text-sm focus:outline-none focus:border-[#ff4655]/50 transition-colors" />
                                 </div>
                                 <div className="flex gap-2 pt-2">
-                                   <button 
-                                      onClick={() => setIsEditing(false)}
-                                      className="flex-1 py-3 rounded-xl bg-white/5 text-white/60 hover:bg-white/10 hover:text-white text-xs font-bold transition-colors"
-                                   >
-                                     Cancel
-                                   </button>
-                                   <button 
-                                      onClick={() => handleSaveEdit(selectedAgent.id, activeSkill.slot)}
-                                      className="flex-1 py-3 rounded-xl bg-[#ff4655] text-white hover:bg-[#ff4655]/90 text-xs font-bold transition-colors shadow-lg shadow-[#ff4655]/20"
-                                   >
-                                     Save Changes
+                                   <button onClick={() => setIsEditing(false)} className="flex-1 py-3 rounded-xl bg-black/5 dark:bg-white/5 text-gray-500 dark:text-white/60 hover:bg-black/10 dark:hover:bg-white/10 hover:text-black dark:hover:text-white text-xs font-bold transition-colors" disabled={isSaving}>Cancel</button>
+                                   <button onClick={() => handleSaveEdit(selectedAgent.id, activeSkill.slot)} disabled={isSaving} className="flex-1 py-3 rounded-xl bg-[#ff4655] text-white hover:bg-[#ff4655]/90 text-xs font-bold transition-colors shadow-lg shadow-[#ff4655]/20 flex items-center justify-center gap-2">
+                                     {isSaving ? (<><div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />Saving...</>) : (<><Save size={14} />Save Global</>)}
                                    </button>
                                 </div>
                               </div>
                             ) : (
                               <div className="flex justify-between items-center mt-2">
                                   <div className="flex flex-col">
-                                     <div className="text-4xl font-bold text-white tracking-tight font-['PingFang_TC'] jp-name-truncate" title={displayValues.jp}>
-                                        {displayValues.jp}
-                                     </div>
-                                     <div className="text-base font-medium text-white/50 font-mono mt-1 tracking-wide">
-                                        {displayValues.romaji}
-                                     </div>
+                                     <div className="text-4xl font-bold text-gray-900 dark:text-white tracking-tight font-['PingFang_TC'] jp-name-truncate" title={displayValues.jp}>{displayValues.jp}</div>
+                                     <div className="text-base font-medium text-gray-500 dark:text-white/50 font-mono mt-1 tracking-wide">{displayValues.romaji}</div>
                                   </div>
-
-                                  <button 
-                                    onClick={() => speak(displayValues.jp)}
-                                    className="w-16 h-16 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]"
-                                  >
+                                  <button onClick={() => speak(displayValues.jp)} className="w-16 h-16 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(0,0,0,0.1)] dark:shadow-[0_0_20px_rgba(255,255,255,0.2)]">
                                     <Volume2 size={28} />
                                   </button>
                               </div>
                             )}
                          </div>
                       </div>
-
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
           );
         }
 
-        // 渲染组件
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
