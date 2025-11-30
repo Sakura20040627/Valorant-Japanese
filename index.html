@@ -574,14 +574,45 @@
           }
         };
 
-        // 語音合成 Hook - Reverted to speechSynthesis for reliability (Google TTS links are blocked)
+        // 語音合成 Hook - Enhanced for Mobile Compatibility
         const useSpeech = () => {
+          const [voices, setVoices] = useState([]);
+
+          useEffect(() => {
+            // Mobile (iOS/Android) needs explicit loading of voices
+            const updateVoices = () => {
+                const vs = window.speechSynthesis.getVoices();
+                setVoices(vs);
+            };
+
+            // Initial load
+            updateVoices();
+
+            // Event listener for async loading
+            if (window.speechSynthesis.onvoiceschanged !== undefined) {
+                window.speechSynthesis.onvoiceschanged = updateVoices;
+            }
+          }, []);
+
           const speak = (text) => {
             if (!window.speechSynthesis) return;
+            
+            // Cancel current speech to prevent queueing issues on mobile
             window.speechSynthesis.cancel();
+
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'ja-JP';
             utterance.rate = 0.9;
+            
+            // Try to find a Japanese voice explicitly
+            // This often helps on iOS/Android where default voice might not switch automatically
+            if (voices.length > 0) {
+                const jaVoice = voices.find(v => v.lang.includes('ja') || v.lang.includes('JP'));
+                if (jaVoice) {
+                    utterance.voice = jaVoice;
+                }
+            }
+
             window.speechSynthesis.speak(utterance);
           };
           return { speak };
@@ -853,15 +884,15 @@
                         </div>
                     </div>
 
-                  {/* Role Filter Bar - Added Emboss Style & External Frame (Image 3) */}
-                  <div className="mb-10 animate-fade-up mt-4 flex justify-center" style={{ animationDelay: '0.1s' }}>
-                    <div className="p-2 rounded-full emboss-frame flex items-center gap-3 w-fit flex-wrap scale-100">
+                  {/* Role Filter Bar - Fixed Mobile Layout Overflow */}
+                  <div className="mb-10 animate-fade-up mt-4 flex justify-center px-4" style={{ animationDelay: '0.1s' }}>
+                    <div className="p-2 rounded-2xl md:rounded-full emboss-frame flex flex-wrap justify-center items-center gap-2 md:gap-3 w-full max-w-fit">
                         {AGENT_ROLES.map(role => (
                         <button
                             key={role}
                             onClick={() => setSelectedRole(role)}
                             className={`
-                            px-5 py-2 rounded-full text-base font-bold transition-all duration-300
+                            px-4 py-2 md:px-5 rounded-full text-sm md:text-base font-bold transition-all duration-300
                             ${selectedRole === role 
                                 ? 'bg-white text-black shadow-sm scale-105 dark:bg-white dark:text-black dark:scale-100' // Dark mode: White bg, Black text (Same as light)
                                 : 'text-gray-500 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-white/10'}
@@ -944,8 +975,7 @@
                   <div key={activeSkill.nameEn} className="space-y-6 animate-scale-in">
                     <div className="space-y-2 text-center lg:text-left">
                       <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">{activeSkill.nameEn}</h2>
-                      {/* Skill Desc: Removed explicit font, ensuring inheritance and comfort */}
-                      <p className="text-lg text-gray-500 dark:text-white/60 font-medium leading-relaxed">{activeSkill.desc}</p>
+                      {/* Removed Skill Description Text as requested */}
                     </div>
 
                     <div className="grid gap-4 mt-8">
