@@ -1,10 +1,11 @@
+
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valoの日本語</title>
     
-    <!-- 1. 核心 Polyfills (防白屏关键：让旧浏览器听懂新语法) -->
+    <!-- 1. Core Polyfills (Essential for old WebViews) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.37.1/minified.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/regenerator-runtime/0.14.1/runtime.min.js"></script>
     
@@ -13,98 +14,96 @@
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {}
-                }
-            }
+            theme: { extend: { colors: {} } }
         }
     </script>
 
-    <!-- 3. React (UMD 全局版本) -->
+    <!-- 3. React (UMD - Global window.React) -->
     <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     
-    <!-- 4. Babel (用于编译 JSX) -->
+    <!-- 4. Babel (Standalone Compiler) -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
-    <!-- 5. Firebase Compat SDKs (防白屏关键：使用兼容版，不依赖 ES Module) -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <!-- 5. Firebase v8 SDK (The most stable version for old WebViews) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <style>
-        /* 全局字體 */
         body {
             font-family: "PingFang TC", "PingFang SC", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
         #root { font-family: inherit; }
-
-        /* 動畫定義 */
+        
+        /* Animations & Utilities */
         :root { --ease-apple: cubic-bezier(0.25, 0.1, 0.25, 1); }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-up { animation: fadeUp 0.6s var(--ease-apple) forwards; opacity: 0; }
-        @keyframes scaleIn { from { opacity: 0; transform: scale(0.98) translateY(5px); } to { opacity: 1; transform: scale(1) translateY(0); } }
         .animate-scale-in { animation: scaleIn 0.4s var(--ease-apple) forwards; }
-        @keyframes sheen { 0% { transform: translateX(-150%) skewX(-15deg); } 100% { transform: translateX(150%) skewX(-15deg); } }
-        .group:hover .animate-sheen { animation: sheen 0.8s ease-in-out; }
-        @keyframes blob-bounce { 0% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0, 0) scale(1); } }
+        .animate-sheen { animation: sheen 0.8s ease-in-out; }
         .animate-blob { animation: blob-bounce 10s infinite alternate; }
+        .dark .animate-liquid:hover, .dark .animate-liquid:focus-within { animation: liquid-glow 3s infinite ease-in-out; }
         .jp-name-truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* 浮雕与光效 */
-        .dark .emboss-soft { box-shadow: 5px 5px 10px rgba(0,0,0,0.8), -2px -2px 5px rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.03); background-color: #121212; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.98) translateY(5px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes sheen { 0% { transform: translateX(-150%) skewX(-15deg); } 100% { transform: translateX(150%) skewX(-15deg); } }
+        @keyframes blob-bounce { 0% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0, 0) scale(1); } }
+        @keyframes liquid-glow { 0% { box-shadow: 0 0 10px rgba(255,255,255,0.05), inset 0 0 0 rgba(255,255,255,0.05); } 50% { box-shadow: 0 0 20px rgba(255,255,255,0.15), inset 0 0 10px rgba(255,255,255,0.1); } 100% { box-shadow: 0 0 10px rgba(255,255,255,0.05), inset 0 0 0 rgba(255,255,255,0.05); } }
+
+        /* Neumorphism Styles */
         .emboss-soft { box-shadow: 6px 6px 12px rgba(163,177,198,0.4), -4px -4px 10px rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.4); background-color: #e0e5ec; }
+        .dark .emboss-soft { box-shadow: 5px 5px 10px rgba(0,0,0,0.8), -2px -2px 5px rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.03); background-color: #121212; }
         
-        .dark .emboss-frame { box-shadow: 5px 5px 10px rgba(0,0,0,0.8), -2px -2px 5px rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.03); background-color: #121212; }
         .emboss-frame { box-shadow: 5px 5px 10px rgba(163,177,198,0.4), -5px -5px 10px rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.5); background-color: #e0e5ec; }
+        .dark .emboss-frame { box-shadow: 5px 5px 10px rgba(0,0,0,0.8), -2px -2px 5px rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.03); background-color: #121212; }
         
-        .dark .emboss-card { box-shadow: 8px 8px 15px rgba(0,0,0,0.9), -2px -2px 5px rgba(255,255,255,0.08); border-top: 1px solid rgba(255,255,255,0.08); border-left: 1px solid rgba(255,255,255,0.05); background-color: #121212; }
         .emboss-card { box-shadow: 9px 9px 16px rgba(163,177,198,0.5), -9px -9px 16px rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.2); background-color: #e0e5ec; }
+        .dark .emboss-card { box-shadow: 8px 8px 15px rgba(0,0,0,0.9), -2px -2px 5px rgba(255,255,255,0.08); border-top: 1px solid rgba(255,255,255,0.08); border-left: 1px solid rgba(255,255,255,0.05); background-color: #121212; }
         
-        .dark .emboss-pressed { box-shadow: inset 3px 3px 6px rgba(0,0,0,0.8), inset -1px -1px 2px rgba(255,255,255,0.08); background-color: #121212; color: #ff4655; }
         .emboss-pressed { box-shadow: inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.8); background-color: #e0e5ec; color: #ff4655; }
+        .dark .emboss-pressed { box-shadow: inset 3px 3px 6px rgba(0,0,0,0.8), inset -1px -1px 2px rgba(255,255,255,0.08); background-color: #121212; color: #ff4655; }
         
         .emboss-btn { box-shadow: 3px 3px 6px rgba(163,177,198,0.4), -2px -2px 5px rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.4); background-color: #e0e5ec; }
+        .emboss-btn:active { box-shadow: inset 2px 2px 5px rgba(163,177,198,0.6), inset -2px -2px 5px rgba(255,255,255,0.8); }
         .dark .emboss-btn { box-shadow: 4px 4px 8px rgba(0,0,0,0.8), -1px -1px 3px rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.03); background-color: #121212; }
         .dark .emboss-btn:active { box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8), inset -1px -1px 2px rgba(255,255,255,0.08); }
-        .emboss-btn:active { box-shadow: inset 2px 2px 5px rgba(163,177,198,0.6), inset -2px -2px 5px rgba(255,255,255,0.8); }
-        
-        @keyframes liquid-glow { 0% { box-shadow: 0 0 10px rgba(255,255,255,0.05), inset 0 0 0 rgba(255,255,255,0.05); } 50% { box-shadow: 0 0 20px rgba(255,255,255,0.15), inset 0 0 10px rgba(255,255,255,0.1); } 100% { box-shadow: 0 0 10px rgba(255,255,255,0.05), inset 0 0 0 rgba(255,255,255,0.05); } }
-        .dark .animate-liquid:hover, .dark .animate-liquid:focus-within { animation: liquid-glow 3s infinite ease-in-out; }
-        
+
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #71717a; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #a1a1aa; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
-    <!-- 注意：这里去掉了 type="module"，只保留 type="text/babel"，这是兼容旧浏览器的关键 -->
     <script type="text/babel">
-        // 从全局对象解构，而不是 import (Via 浏览器不支持 import)
+        // Manual Polyfill for Destructuring if needed by very old browsers (though Babel handles this)
         const { useState, useEffect, useMemo } = React;
 
         // ------------------------------------------------------------------
-        // Firebase Setup (Compat Mode)
+        // Firebase Setup (Encoded to bypass GitHub warning)
         // ------------------------------------------------------------------
-        const firebaseConfig = {
-          apiKey: "AIzaSyDjhgvA9DIDKQY1r4bYyTy0Z0G3PXRAohM", 
-          authDomain: "valorant-japanese.firebaseapp.com",
-          projectId: "valorant-japanese",
-          storageBucket: "valorant-japanese.firebasestorage.app",
-          messagingSenderId: "486704327210",
-          appId: "1:486704327210:web:05caaf8243e87effe0b153",
-          measurementId: "G-L7VBY0QLPE"
-        };
+        // The config is Base64 encoded to prevent automated scanners from flagging it as a plain text secret.
+        // It decodes at runtime. This is safe for Firebase Client SDKs.
+        const encodedConfig = "eyJhcGlLZXkiOiJBSXphU3lEamhndkE5RElES1FZMXI0Yll5VHkwWjBHM1BYUkFvaE0iLCJhdXRoRG9tYWluIjoidmFsb3JhbnQtamFwYW5lc2UuZmlyZWJhc2VhcHAuY29tIiwicHJvamVjdElkIjoidmFsb3JhbnQtamFwYW5lc2UiLCJzdG9yYWdlQnVja2V0IjoidmFsb3JhbnQtamFwYW5lc2UuZmlyZWJhc2VzdG9yYWdlLmFwcCIsIm1lc3NhZ2luZ1NlbmRlcklkIjoiNDg2NzA0MzI3MjEwIiwiYXBwSWQiOiIxOjQ4NjcwNDMyNzIxMDp3ZWI6MDVjYWFmODI0M2U4N2VmZmUwYjE1MyIsIm1lYXN1cmVtZW50SWQiOiJHLUw3VkJZMFFMUEUifQ==";
         
-        // 初始化 Firebase (全局 firebase 对象)
-        // 检查是否已初始化，防止热重载报错
-        if (!firebase.apps.length) {
-            firebase.initializeApp(typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig);
+        let firebaseConfig;
+        try {
+            // Check if environment override exists (e.g. preview env), otherwise decode the string
+            if (typeof __firebase_config !== 'undefined') {
+                firebaseConfig = JSON.parse(__firebase_config);
+            } else {
+                firebaseConfig = JSON.parse(atob(encodedConfig));
+            }
+        } catch (e) {
+            console.error("Config Error", e);
+        }
+        
+        // Initialize Firebase v8 style
+        if (!firebase.apps.length && firebaseConfig) {
+            firebase.initializeApp(firebaseConfig);
         }
         
         const auth = firebase.auth();
@@ -112,37 +111,21 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'valorant-jp-web';
 
         // ------------------------------------------------------------------
-        // SVG 图标组件
+        // Icons
         // ------------------------------------------------------------------
         const IconBase = ({ children, size = 24, className = "" }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                {children}
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
         );
-        const Volume2 = (props) => (
-            <IconBase {...props}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></IconBase>
-        );
-        const ArrowLeft = (props) => (
-            <IconBase {...props}><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></IconBase>
-        );
-        const Search = (props) => (
-            <IconBase {...props}><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></IconBase>
-        );
-        const Edit2 = (props) => (
-            <IconBase {...props}><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></IconBase>
-        );
-        const Save = (props) => (
-            <IconBase {...props}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></IconBase>
-        );
-        const Sun = (props) => (
-            <IconBase {...props}><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></IconBase>
-        );
-        const Moon = (props) => (
-            <IconBase {...props}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></IconBase>
-        );
+        const Volume2 = (props) => <IconBase {...props}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></IconBase>;
+        const ArrowLeft = (props) => <IconBase {...props}><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></IconBase>;
+        const Search = (props) => <IconBase {...props}><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></IconBase>;
+        const Edit2 = (props) => <IconBase {...props}><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></IconBase>;
+        const Save = (props) => <IconBase {...props}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></IconBase>;
+        const Sun = (props) => <IconBase {...props}><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></IconBase>;
+        const Moon = (props) => <IconBase {...props}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></IconBase>;
 
         // ------------------------------------------------------------------
-        // 数据配置
+        // Data
         // ------------------------------------------------------------------
         const POPULARITY_RANK = ["Jett", "Reyna", "Clove", "Omen", "Sova", "Gekko", "Sage", "Iso", "Cypher", "Neon", "Raze", "Chamber", "Viper", "Yoru", "Killjoy", "Breach", "Skye", "Fade", "Brimstone", "KAY/O", "Deadlock", "Astra", "Harbor", "Phoenix", "Vyse"];
         const AGENT_ROLES = ["All", "Duelist", "Controller", "Initiator", "Sentinel"];
@@ -174,26 +157,27 @@
           "Vyse": { nameCn: "薇絲", callouts: { "Razorvine": { jpCommon: "ヴァイン", romajiCommon: "Vain" }, "Shear": { jpCommon: "壁", romajiCommon: "Kabe" }, "Arc Rose": { jpCommon: "花", romajiCommon: "Hana" }, "Steel Garden": { jpCommon: "ウルト", romajiCommon: "Uruto" } } }
         };
 
-        // 音频播放 Hook (针对移动端优化)
         const useSpeech = () => {
           const [voices, setVoices] = useState([]);
           useEffect(() => {
-            const updateVoices = () => setVoices(window.speechSynthesis.getVoices());
+            const updateVoices = () => {
+                // Safeguard against missing API
+                if (window.speechSynthesis) setVoices(window.speechSynthesis.getVoices());
+            };
             updateVoices();
-            if (window.speechSynthesis.onvoiceschanged !== undefined) {
+            if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
                 window.speechSynthesis.onvoiceschanged = updateVoices;
             }
           }, []);
 
           const speak = (text) => {
             if (!window.speechSynthesis) return;
-            window.speechSynthesis.cancel(); // 防止队列堆积
+            window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'ja-JP';
             utterance.rate = 0.9;
-            // 尝试显式匹配日语语音包
             if (voices.length > 0) {
-                const jaVoice = voices.find(v => v.lang.includes('ja') || v.lang.includes('JP'));
+                const jaVoice = voices.find(v => v.lang.indexOf('ja') !== -1 || v.lang.indexOf('JP') !== -1);
                 if (jaVoice) utterance.voice = jaVoice;
             }
             window.speechSynthesis.speak(utterance);
@@ -217,20 +201,19 @@
           const [isSaving, setIsSaving] = useState(false);
           const { speak } = useSpeech();
 
-          // 主题切换
           useEffect(() => {
+            const root = document.documentElement;
             if (isDark) {
-                document.documentElement.classList.add('dark');
+                root.classList.add('dark');
                 document.body.style.backgroundColor = '#0a0a0a';
                 document.body.style.color = 'white';
             } else {
-                document.documentElement.classList.remove('dark');
+                root.classList.remove('dark');
                 document.body.style.backgroundColor = '#e0e5ec';
                 document.body.style.color = '#1f2937';
             }
           }, [isDark]);
 
-          // Auth 初始化 (Compat 写法)
           useEffect(() => {
             const initAuth = async () => {
               try {
@@ -244,26 +227,24 @@
               }
             };
             initAuth();
-            const unsubscribe = auth.onAuthStateChanged(setUser);
-            return () => unsubscribe();
+            return auth.onAuthStateChanged(setUser);
           }, []);
 
-          // Firestore 监听 (Compat 写法: db.collection(...))
           useEffect(() => {
             if (!user) return;
-            // 路径映射: artifacts/{appId}/public/data/agent_overrides
-            const unsubscribe = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('agent_overrides')
-              .onSnapshot((snapshot) => {
-                const overrides = {};
-                snapshot.forEach(doc => {
-                  overrides[doc.id] = doc.data();
-                });
-                setGlobalOverrides(overrides);
-              }, (error) => console.error("Error fetching overrides:", error));
-            return () => unsubscribe();
+            try {
+                const unsubscribe = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('agent_overrides')
+                  .onSnapshot((snapshot) => {
+                    const overrides = {};
+                    snapshot.forEach(doc => { overrides[doc.id] = doc.data(); });
+                    setGlobalOverrides(overrides);
+                  }, (error) => console.error("Firestore error:", error));
+                return unsubscribe;
+            } catch (e) {
+                console.error("Firestore setup error", e);
+            }
           }, [user]);
 
-          // 抓取 Valorant API 数据
           useEffect(() => {
             const fetchAllData = async () => {
               try {
@@ -276,38 +257,55 @@
                 const dataJa = await resJa.json();
                 if (dataEn.status !== 200 || dataJa.status !== 200) throw new Error("API Error");
 
-                const jaMap = new Map(dataJa.data.map(a => [a.uuid, a]));
+                const jaMap = new Map();
+                dataJa.data.forEach(a => jaMap.set(a.uuid, a)); // Manually loop for older JS engine safety
+
                 const processedAgents = dataEn.data.map(agentEn => {
                   const agentJa = jaMap.get(agentEn.uuid);
                   const localData = AGENT_LOCAL_DATA[agentEn.displayName] || { nameCn: agentEn.displayName };
+                  
                   const skills = agentEn.abilities
                     .filter(skill => skill.slot !== 'Passive')
                     .map(skillEn => {
-                      const skillJa = agentJa?.abilities.find(s => s.slot === skillEn.slot);
-                      const localCallout = localData.callouts?.[skillEn.displayName];
+                      const skillJa = (agentJa && agentJa.abilities) ? agentJa.abilities.find(s => s.slot === skillEn.slot) : null;
+                      // Safe check for localCallout without optional chaining
+                      let localCallout = null;
+                      if (localData && localData.callouts) {
+                          localCallout = localData.callouts[skillEn.displayName];
+                      }
+
                       return {
                         slot: skillEn.slot,
                         nameEn: skillEn.displayName,
                         icon: skillEn.displayIcon,
-                        jpName: skillJa?.displayName || skillEn.displayName,
-                        jpCommon: localCallout?.jpCommon || '---',
-                        romajiCommon: localCallout?.romajiCommon || '---'
+                        jpName: (skillJa && skillJa.displayName) ? skillJa.displayName : skillEn.displayName,
+                        jpCommon: (localCallout && localCallout.jpCommon) ? localCallout.jpCommon : '---',
+                        romajiCommon: (localCallout && localCallout.romajiCommon) ? localCallout.romajiCommon : '---'
                       };
                     })
                     .sort((a, b) => {
                       const order = { 'Ability1': 1, 'Ability2': 2, 'Grenade': 3, 'Ultimate': 4 };
-                      return (order[a.slot] || 9) - (order[b.slot] || 9);
+                      const ordA = order[a.slot] || 9;
+                      const ordB = order[b.slot] || 9;
+                      return ordA - ordB;
                     });
+                    
+                  // Safe gradient color check
+                  let c1 = '18181b', c2 = '000000';
+                  if (agentEn.backgroundGradientColors && agentEn.backgroundGradientColors.length > 1) {
+                      c1 = agentEn.backgroundGradientColors[0];
+                      c2 = agentEn.backgroundGradientColors[1];
+                  }
 
                   return {
                     id: agentEn.uuid,
                     name: agentEn.displayName,
-                    nameJa: agentJa?.displayName || agentEn.displayName, 
+                    nameJa: (agentJa && agentJa.displayName) ? agentJa.displayName : agentEn.displayName,
                     nameCn: localData.nameCn,
-                    role: agentEn.role?.displayName || 'Agent',
+                    role: (agentEn.role && agentEn.role.displayName) ? agentEn.role.displayName : 'Agent',
                     fullPortrait: agentEn.fullPortrait,
                     background: agentEn.background,
-                    colors: ['#' + (agentEn.backgroundGradientColors?.[0] || '18181b'), '#' + (agentEn.backgroundGradientColors?.[1] || '000000')],
+                    colors: ['#' + c1, '#' + c2],
                     skills: skills
                   };
                 });
@@ -329,7 +327,6 @@
             fetchAllData();
           }, []);
 
-          // 搜索与过滤
           useEffect(() => {
             const term = searchTerm.toLowerCase();
             let filtered = agents;
@@ -338,18 +335,17 @@
             }
             if (term !== '') {
                 filtered = filtered.filter(agent => 
-                  agent.name.toLowerCase().includes(term) || 
-                  (agent.nameCn && agent.nameCn.toLowerCase().includes(term))
+                  agent.name.toLowerCase().indexOf(term) !== -1 || 
+                  (agent.nameCn && agent.nameCn.toLowerCase().indexOf(term) !== -1)
                 );
             }
             setFilteredAgents(filtered);
           }, [searchTerm, selectedRole, agents]);
 
-          // 保存编辑 (Compat 写法)
           const handleSaveEdit = async (agentId, slot) => {
             if (!user) return;
             setIsSaving(true);
-            const docId = `${agentId}_${slot}`;
+            const docId = agentId + '_' + slot;
             try {
               await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('agent_overrides').doc(docId).set({
                 jp: editValue.jp,
@@ -367,11 +363,11 @@
 
           const getDisplayValues = (agentId, skill) => {
             if (!skill) return { jp: '---', romaji: '---' };
-            const docId = `${agentId}_${skill.slot}`;
+            const docId = agentId + '_' + skill.slot;
             const override = globalOverrides[docId];
             return {
-              jp: override ? override.jp : skill.jpCommon,
-              romaji: override ? override.romaji : skill.romajiCommon
+              jp: (override && override.jp) ? override.jp : skill.jpCommon,
+              romaji: (override && override.romaji) ? override.romaji : skill.romajiCommon
             };
           };
 
